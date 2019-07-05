@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.service.InformationService;
+import com.ibs.i18n.util.getMessageUtil;
 
 @RestController
 @RequestMapping("/information")
@@ -15,7 +16,7 @@ public class InformationController {
 	
 	@RequestMapping("/insert")
 	public InformationSheet insert(@RequestBody InformationSheet informationSheet ) {
-		String  str = informationService.getMessage(1111);
+		String  str = informationService.getMessage(1111,getMessageUtil.getLocalLanguage());
 	    System.out.print(str);
 		return informationSheet = informationService.insert(informationSheet);
 	}
