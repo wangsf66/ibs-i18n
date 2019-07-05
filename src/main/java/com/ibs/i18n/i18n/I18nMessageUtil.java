@@ -3,16 +3,18 @@ package com.ibs.i18n.i18n;
 import java.io.IOException;
 
 import org.springframework.context.support.MessageSourceAccessor;
-import org.springframework.context.support.ReloadableResourceBundleMessageSource;
+
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
+
+import com.ibs.i18n.util.ReloadableResourceBundleMessageSource;
 
 public class I18nMessageUtil {
 	private static MessageSourceAccessor accessor;
     //private static MessageSource messageSource;
     private static final String PATH_PARENT = "classpath:i18n/";
-    private static final String SUFFIX = ".properties";
+    private static final String SUFFIX = ".i18n";
     private static ResourcePatternResolver resourcePatternResolver = new PathMatchingResourcePatternResolver();
 
     private I18nMessageUtil(){

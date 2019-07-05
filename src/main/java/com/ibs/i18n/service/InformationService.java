@@ -43,13 +43,13 @@ public class InformationService {
 	}
 	
 	@Transaction
-	public String getMessage(int code,String language) {
+	public String getMessage(int code) {
 		String str = "";
     	InformationSheet informationSheet = new InformationSheet(); 
     	String message = getMessageUtil.getMessage(code);
  		if(message=="") { 
  			informationSheet.setCode(code); 
- 			Object obj = SessionContext.getSession().getSqlSession().query("select * from INFORMATION_SHEET where code = "+informationSheet.getCode()+"and language= '"+language+"'");
+ 			Object obj = SessionContext.getSession().getSqlSession().query("select * from INFORMATION_SHEET where code = "+informationSheet.getCode()+"and language= '"+getMessageUtil.getLocalLanguage()+"'");
  			ArrayList<Map<String,Object>> messageList = (ArrayList<Map<String,Object>>)obj;
  			Map<String, Object> map = null;
  			for (Object object : messageList) {

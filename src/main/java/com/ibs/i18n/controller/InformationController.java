@@ -16,7 +16,7 @@ public class InformationController {
 	
 	@RequestMapping("/insert")
 	public InformationSheet insert(@RequestBody InformationSheet informationSheet ) {
-		String  str = informationService.getMessage(1111,getMessageUtil.getLocalLanguage());
+		String  str = informationService.getMessage(1111);
 	    System.out.print(str);
 		return informationSheet = informationService.insert(informationSheet);
 	}
