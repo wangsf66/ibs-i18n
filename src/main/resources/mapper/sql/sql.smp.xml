@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	<sql namespace="com.test" name="queryUser">
+		<content dialect="" type="select"><!-- 如果不写, 默认是当前系统的dialect; all表示所有类型的dialect -->
+			select * from INFORMATION_SHEET
+			
+		<!-- 
+			<where>
+				<if test="age != null and age == 23">
+					and name = #{name, descriptionName=姓名, dataType=string, usePlaceholder=false, valuePrefix=', valueSuffix=', nullabled=true, defaultValue=dv, validate=fales, legnth=10, precision=2}
+				</if>
+				<if test="age != null">
+					and name = 'DougLei'
+				</if>
+			</where>
+		-->	
+			
+		 <!-- 
+			<set>
+				<if test="age != null and age == 23">
+					name = #{name},
+				</if>
+				<if test="age == null">
+					name = 'DougLei',
+				</if>
+				<if test="age == null">
+					name = 'DougLei222',
+				</if>
+			</set>
+		-->	
+		
+		<!-- 	
+			<trim prefix="where" prefixoverride="" suffix="" suffixoverride="">
+				<if test="name == '哈哈'">
+					b
+				</if>
+			</trim> 
+		-->
+		
+		<!-- 
+			<switch>
+				<if test="age == null">
+					name = 'age is null',
+				</if>
+				<if test="age == null">
+					name = 'age not null',
+				</if>
+				<else>
+					and else 
+				</else>
+			</switch>
+		-->
+		
+		<!-- 
+			<foreach collection="users" alias="user" open="where id in (" separator="," close=")">
+				<if test="user.id == 1">
+					#{user.id, dataType=string}
+				</if>
+			</foreach>
+		-->	
+		
+			<!-- <foreach collection="userIds" alias="userId" open="where id in (" separator="," close=")">
+				<if test="userId == 1">
+					#{userId, dataType=string}
+				</if>
+			</foreach> -->
+			
+		
+		</content>
+	<!-- 	
+		<content dialect="" type="procedure">
+			{call test_procedure (
+				#{id, dbType=VARCHAR, mode=in},
+				#{name, dbType=VARCHAR, mode=out}
+			)}
+		</content>
+	-->	
+	</sql>
+</mapping-configuration>

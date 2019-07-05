@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="INFORMATION_SHEET" class="com.ibs.i18n.entity.InformationSheet" createMode="create">
+		<columns>
+			<column name="id" property="id" dataType="string" primaryKey="true" length="32" />
+			<column name="code" descriptionName="编号" property="code" dataType="integer" length="10"/>
+			<column name="message" descriptionName="信息" property="message" dataType="string" length="100"  />
+			<column name="language" descriptionName="语言" property="language" dataType="string" length="5"  />
+		</columns>
+	</table>
+</mapping-configuration>  
