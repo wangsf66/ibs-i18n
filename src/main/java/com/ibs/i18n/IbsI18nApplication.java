@@ -8,7 +8,6 @@ import org.springframework.boot.autoconfigure.jdbc.DataSourceAutoConfiguration;
 @SpringBootApplication
 @EnableAutoConfiguration(exclude={DataSourceAutoConfiguration.class})
 public class IbsI18nApplication {
-
 	public static void main(String[] args) {
 		SpringApplication.run(IbsI18nApplication.class, args);
 	}

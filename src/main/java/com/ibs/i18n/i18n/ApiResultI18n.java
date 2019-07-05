@@ -33,12 +33,24 @@ public class ApiResultI18n implements Serializable{
      * 返回信息
      */
     private String msg = "成功";
-
-
+    
     /**
+     * 返回数据
+     */
+    private Object data;
+
+    public Object getData() {
+		return data;
+	}
+
+	public void setData(Object data) {
+		this.data = data;
+	}
+
+	/**
      * api 返回结果
      */
-    private ApiResultI18n() {}
+    public ApiResultI18n() {}
 
     /**
      * api 返回结果,区分多语言

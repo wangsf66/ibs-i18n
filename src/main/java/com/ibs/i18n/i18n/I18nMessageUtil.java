@@ -1,6 +1,8 @@
 package com.ibs.i18n.i18n;
 
 import java.io.IOException;
+import java.util.List;
+import java.util.Properties;
 
 import org.springframework.context.support.MessageSourceAccessor;
 
@@ -8,6 +10,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
 import org.springframework.core.io.support.ResourcePatternResolver;
 
+import com.douglei.tools.instances.scanner.FileScanner;
 import com.ibs.i18n.util.ReloadableResourceBundleMessageSource;
 
 public class I18nMessageUtil {
@@ -30,6 +33,17 @@ public class I18nMessageUtil {
         /**
          * 获取配置文件名
          */
+    	//扫描所有以.i18n为后缀名的文件
+    	List<String> list = new FileScanner(".i18n").scan(true, "i18n/");
+    	Properties p  = null;
+    	for(String file:list) {
+			p = new Properties(); 
+			p.load(FileScanner.readByScanPath(file));
+    		System.out.print(file);
+    	}
+    	
+		
+
         Resource resource = resourcePatternResolver.getResource(PATH_PARENT + language + SUFFIX);
         String fileName = resource.getURL().toString();
         int lastIndex = fileName.lastIndexOf(".");
