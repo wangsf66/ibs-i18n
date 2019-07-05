@@ -34,15 +34,15 @@ public class I18nMessageUtil {
          * 获取配置文件名
          */
     	//扫描所有以.i18n为后缀名的文件
-    	List<String> list = new FileScanner(".i18n").scan(true, "i18n/");
+    	FileScanner  sc = new FileScanner(".i18n");
+    	List<String> list = sc.scan(true, "i18n/");
     	Properties p  = null;
     	for(String file:list) {
 			p = new Properties(); 
 			p.load(FileScanner.readByScanPath(file));
     		System.out.print(file);
     	}
-    	
-		
+    	sc.destroy();
 
         Resource resource = resourcePatternResolver.getResource(PATH_PARENT + language + SUFFIX);
         String fileName = resource.getURL().toString();
