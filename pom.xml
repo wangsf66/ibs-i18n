@@ -3,13 +3,12 @@
 	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 	<parent>
-		<groupId>com.ibs.parent</groupId>
+		<groupId>com.ibs</groupId>
 		<artifactId>ibs-parent</artifactId>
 		<version>1.0.0.RELEASE</version>
 		<relativePath/>
 	</parent>
 
-	<groupId>com.ibs</groupId>
 	<artifactId>ibs-i18n</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
 	<name>ibs-i18n</name>
