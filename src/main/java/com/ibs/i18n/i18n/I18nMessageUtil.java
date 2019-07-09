@@ -2,12 +2,14 @@ package com.ibs.i18n.i18n;
 
 import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
 
 import com.douglei.tools.instances.scanner.FileScanner;
+import com.douglei.tools.utils.CloseUtil;
 
 public class I18nMessageUtil {
 	
@@ -26,12 +28,20 @@ public class I18nMessageUtil {
     	Properties p  = null;
     	for(String file:list) {
 			p = new Properties(); 
-			p.load(FileScanner.readByScanPath(file));
-			map = new HashMap<String, String>((Map) p);
-			File tempFile =new File(file.trim());  
-			int lastIndex = tempFile.getName().lastIndexOf(".");
-	        String baseName = tempFile.getName().substring(0,lastIndex);
-			mapList.put(baseName, map);
+			InputStream in  = null;
+			try {
+				in = FileScanner.readByScanPath(file);
+				p.load(in);
+				map = new HashMap<String, String>((Map) p);
+				File tempFile =new File(file.trim());  
+				int lastIndex = tempFile.getName().lastIndexOf(".");
+		        String baseName = tempFile.getName().substring(0,lastIndex);
+				mapList.put(baseName, map);
+			}catch(IOException e){
+				 e.printStackTrace();
+			}finally {
+				CloseUtil.closeIO(in);
+			}
     	}
     	sc.destroy();
     }

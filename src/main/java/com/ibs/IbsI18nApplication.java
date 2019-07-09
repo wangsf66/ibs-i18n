@@ -1,4 +1,4 @@
-package com.ibs.i18n;
+package com.ibs;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
