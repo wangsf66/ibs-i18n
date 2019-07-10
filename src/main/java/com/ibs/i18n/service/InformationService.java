@@ -2,21 +2,22 @@ package com.ibs.i18n.service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 import java.util.Map;
-
 import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.context.transaction.component.TransactionComponent;
-
 import com.douglei.tools.utils.IdentityUtil;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.ApiResultI18n;
 import com.ibs.i18n.i18n.MessageResult;
+import com.ibs.i18n.util.TransactionComponentAutoRegistry;
 import com.ibs.i18n.util.getMessageUtil;
 
 @TransactionComponent
 public class InformationService {
+	
+//	@Autowired
+//	private InforService inforService;
 	
 	private String languageS;
 
@@ -78,49 +79,93 @@ public class InformationService {
 	@Transaction
 	public MessageResult getMessageResult(MessageResult messageResult, String language) {
 		ArrayList<ApiResultI18n> list = new ArrayList<ApiResultI18n>();
-		InformationSheet informationSheet = null;
 		ApiResultI18n Api = null;
+		Map<String, Object> map = null;
+		InformationSheet informationSheet  = null;
 		MessageResult MR = new MessageResult();
 		MR.setStatus(messageResult.getStatus());
 		MR.setSuccess(messageResult.isSuccess());
 		String message = "";
-		Map<String, Object> map = null;
 		if (language != null && language != "") {
 			this.languageS = language;
 		} else {
 			this.languageS = getMessageUtil.getLocalLanguage();
 		}
-		for (ApiResultI18n obj : messageResult.getData()) {
-			// 根据code获取配置文件中的message
-			message = getMessageUtil.getMessage(obj.getCode());
-			if (message == null || message == "") {
+       
+		if(messageResult.getData() instanceof List){
+		ArrayList<ApiResultI18n> listApi = (ArrayList<ApiResultI18n>)messageResult.getData();
+		  for (ApiResultI18n obj :listApi) {
+				// 根据code获取配置文件中的message
+				message = getMessageUtil.getMessage(obj.getCode());
+				if (message == null || message == "") {
+//					inforService.getMessage(obj, Api, list,languageS);
+					informationSheet = new InformationSheet();
+					informationSheet.setCode(obj.getCode());
+					// 获取到数据库中的信息对象
+					Object objA = SessionContext.getSession().getSqlSession()
+							.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
+									+ "and language= '" + languageS + "'");
+					ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
+					for (Object object : messageList){
+						addmaplist(object);
+						map = (Map<String, Object>) object;
+						Api = new ApiResultI18n();
+						Api.setCode(obj.getCode());
+						Api.setMsg(map.get("MESSAGE") + "");
+						Api.setData(obj.getData());
+						list.add(Api);
+					}
+					
+				} else {
+					Api = new ApiResultI18n();
+					Api.setCode(obj.getCode());
+					Api.setMsg(message);
+					Api.setData(obj.getData());
+					list.add(Api);
+				}
+			}
+		    MR.setMessage(list);
+			MR.setValidation(list);
+			MR.setData(messageResult.getData());
+        }else {
+        	ApiResultI18n apiResultI18n = (ApiResultI18n)messageResult.getData();
+        	message = getMessageUtil.getMessage(apiResultI18n.getCode());
+        	if (message == null || message == "") {
 				informationSheet = new InformationSheet();
-				informationSheet.setCode(obj.getCode());
+				informationSheet.setCode(apiResultI18n.getCode());
 				// 获取到数据库中的信息对象
 				Object objA = SessionContext.getSession().getSqlSession()
 						.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
 								+ "and language= '" + languageS + "'");
 				ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
-				for (Object object : messageList) {
+				for (Object object : messageList){
+					addmaplist(object);
 					map = (Map<String, Object>) object;
 					Api = new ApiResultI18n();
-					Api.setCode(obj.getCode());
+					Api.setCode(apiResultI18n.getCode());
 					Api.setMsg(map.get("MESSAGE") + "");
-					Api.setData(obj.getData());
-					list.add(Api);
+					Api.setData(apiResultI18n.getData());
 				}
 			} else {
 				Api = new ApiResultI18n();
-				Api.setCode(obj.getCode());
+				Api.setCode(apiResultI18n.getCode());
 				Api.setMsg(message);
-				Api.setData(obj.getData());
-				list.add(Api);
+				Api.setData(apiResultI18n.getData());
 			}
-		}
-		MR.setMessage(list);
-		MR.setValidation(list);
-		MR.setData(messageResult.getData());
+        	MR.setMessage(Api);
+			MR.setValidation(Api);
+			MR.setData(messageResult.getData());
+        }
 		return MR;
 	}
 	
+	//将数据库中获得的国际化存入内存
+	public void addmaplist(Object object){
+		@SuppressWarnings("unchecked")
+		Map<String, Object> map =  (Map<String, Object>) object;
+		String language = map.get("LANGUAGE").toString();
+	    Map<String, String> mapA  = TransactionComponentAutoRegistry.mapList.get(language);
+		mapA.put(map.get("CODE").toString(), map.get("MESSAGE").toString());
+	}
+
 }

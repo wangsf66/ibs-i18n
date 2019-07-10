@@ -1,12 +1,9 @@
 package com.ibs.i18n.i18n;
 
 import java.io.IOException;
-import java.io.Serializable;
 
-public class ApiResultI18n implements Serializable{
-	
-	private static final long serialVersionUID = 4518290031778225230L;
-
+public class ApiResultI18n{
+	 
     /**
      * 返回码，1000 正常
      */
@@ -26,6 +23,13 @@ public class ApiResultI18n implements Serializable{
 
 	public void setMsg(String msg) {
 		this.msg = msg;
+	}
+
+
+	public ApiResultI18n(int code, Object data) {
+		super();
+		this.code = code;
+		this.data = data;
 	}
 
 

@@ -1,21 +1,20 @@
 package com.ibs.i18n.i18n;
 
-import java.io.Serializable;
-import java.util.List;
+import java.util.ArrayList;
 
-public class MessageResult implements Serializable{
+public class MessageResult{
 	
-	private static final long serialVersionUID = 4518290031778225230L;
+ArrayList<ApiResultI18n> list = null;
 	
     private boolean success = true;
     
     private String status;
     
-    private List<ApiResultI18n> data;
+    private Object data;
+   
+	private Object validation;
     
-    private List<ApiResultI18n> validation;
-    
-    private List<ApiResultI18n> message;
+    private Object message;
 
     public boolean isSuccess() {
 		return success;
@@ -33,29 +32,38 @@ public class MessageResult implements Serializable{
 		this.status = status;
 	}
 
-	public List<ApiResultI18n> getData() {
+	public Object getData() {
 		return data;
 	}
 
-	public void setData(List<ApiResultI18n> data) {
+	public void setData(Object data) {
 		this.data = data;
 	}
 
-	public List<ApiResultI18n> getValidation() {
+	public Object getValidation() {
 		return validation;
 	}
 
-	public void setValidation(List<ApiResultI18n> validation) {
+	public void setValidation(Object validation) {
 		this.validation = validation;
 	}
 
-	public List<ApiResultI18n> getMessage() {
+	public Object getMessage() {
 		return message;
 	}
 
-	public void setMessage(List<ApiResultI18n> message) {
+	public void setMessage(Object message) {
 		this.message = message;
 	}
 
-    
+	public void addObject(int code,Object data){
+		if(list==null) {
+			list = new ArrayList<ApiResultI18n>();
+			this.data = new ApiResultI18n(code,data);
+			list.add(new ApiResultI18n(code,data));
+		}else if(list.size()>0){
+			list.add(new ApiResultI18n(code,data));
+			this.data = list;
+		}
+	}
 }

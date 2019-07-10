@@ -1,8 +1,8 @@
 package com.ibs.i18n.util;
 
-
 import java.util.Locale;
 import com.ibs.i18n.i18n.ApiResultI18n;
+
 public class getMessageUtil {
 	
      public static String getMessage(int code) {
