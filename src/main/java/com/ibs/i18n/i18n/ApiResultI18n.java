@@ -25,14 +25,6 @@ public class ApiResultI18n{
 		this.msg = msg;
 	}
 
-
-	public ApiResultI18n(int code, Object data) {
-		super();
-		this.code = code;
-		this.data = data;
-	}
-
-
 	/**
      * 返回信息
      */
@@ -50,27 +42,24 @@ public class ApiResultI18n{
 	public void setData(Object data) {
 		this.data = data;
 	}
+	
+	public ApiResultI18n(int code, Object data) {
+		super();
+		this.code = code;
+		this.data = data;
+	}
 
 	/**
      * api 返回结果
      */
     public ApiResultI18n() {}
     
-    public ApiResultI18n(String language,int code){
-        this.code = code;
-        try {
-            this.msg = I18nMessageUtil.getMessage(language,code);
-        } catch (IOException e) {
-            this.msg = "SUCCESS";
-        }
-    }
-
     public static ApiResultI18n failure(int code,String language) {
         return failureResult(code, language);
     }
 
     public static ApiResultI18n failureResult(int code, String language) {
-        ApiResultI18n result = new ApiResultI18n(language,code);
+        ApiResultI18n result = new ApiResultI18n();
         String msg = null;
         try {
             msg = I18nMessageUtil.getMessage(language,code);

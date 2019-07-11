@@ -26,9 +26,9 @@ public class InformationController {
 	    messageResult.addObject(1111, "sssssss");
 		String language = "zh_CN";
 		MessageResult message = informationService.getMessageResult(messageResult,language);
-		System.out.print(message.getData());
+		System.out.println(message.getData());
 		Map<String, String> mapA = TransactionComponentAutoRegistry.mapList.get("zh_CN");
-		System.out.print(mapA.size());
+		System.out.println(mapA.size());
 		return informationSheet = informationService.insert(informationSheet);
 	}
 

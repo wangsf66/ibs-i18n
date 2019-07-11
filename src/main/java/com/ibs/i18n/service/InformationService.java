@@ -91,81 +91,154 @@ public class InformationService {
 		} else {
 			this.languageS = getMessageUtil.getLocalLanguage();
 		}
-       
 		if(messageResult.getData() instanceof List){
-		ArrayList<ApiResultI18n> listApi = (ArrayList<ApiResultI18n>)messageResult.getData();
-		  for (ApiResultI18n obj :listApi) {
-				// 根据code获取配置文件中的message
-				message = getMessageUtil.getMessage(obj.getCode());
-				if (message == null || message == "") {
-//					inforService.getMessage(obj, Api, list,languageS);
-					informationSheet = new InformationSheet();
-					informationSheet.setCode(obj.getCode());
-					// 获取到数据库中的信息对象
-					Object objA = SessionContext.getSession().getSqlSession()
-							.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
-									+ "and language= '" + languageS + "'");
-					ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
-					for (Object object : messageList){
-						addmaplist(object);
-						map = (Map<String, Object>) object;
+		     //searchMapList(messageResult,message,informationSheet,Api,map,list,MR);
+			ArrayList<ApiResultI18n> listApi = (ArrayList<ApiResultI18n>)messageResult.getData();
+			  for (ApiResultI18n obj :listApi) {
+					// 根据code获取配置文件中的message
+					message = getMessageUtil.getMessageA(obj.getCode(),languageS);
+					if(message == null || message == ""){
+//						inforService.getMessage(obj, Api, list,languageS);
+						informationSheet = new InformationSheet();
+						informationSheet.setCode(obj.getCode());
+						// 获取到数据库中的信息对象
+						Object objA = SessionContext.getSession().getSqlSession()
+								.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
+										+ "and language= '" + languageS + "'");
+						ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
+						for (Object object : messageList){
+							addmaplist(object);
+							map = (Map<String, Object>) object;
+							Api = new ApiResultI18n();
+							Api.setCode(obj.getCode());
+							Api.setMsg(map.get("MESSAGE") + "");
+							Api.setData(obj.getData());
+							list.add(Api);
+						}
+						
+					} else {
 						Api = new ApiResultI18n();
 						Api.setCode(obj.getCode());
-						Api.setMsg(map.get("MESSAGE") + "");
+						Api.setMsg(message);
 						Api.setData(obj.getData());
 						list.add(Api);
 					}
-					
-				} else {
-					Api = new ApiResultI18n();
-					Api.setCode(obj.getCode());
-					Api.setMsg(message);
-					Api.setData(obj.getData());
-					list.add(Api);
 				}
-			}
-		    MR.setMessage(list);
-			MR.setValidation(list);
-			MR.setData(messageResult.getData());
+			    MR.setMessage(list);
+				MR.setValidation(list);
+				MR.setData(messageResult.getData());
         }else {
+        	 //searchMapObject(messageResult,message,informationSheet,Api,map,list,MR);	
         	ApiResultI18n apiResultI18n = (ApiResultI18n)messageResult.getData();
-        	message = getMessageUtil.getMessage(apiResultI18n.getCode());
+        	message = getMessageUtil.getMessageA(apiResultI18n.getCode(),languageS);
         	if (message == null || message == "") {
-				informationSheet = new InformationSheet();
-				informationSheet.setCode(apiResultI18n.getCode());
-				// 获取到数据库中的信息对象
-				Object objA = SessionContext.getSession().getSqlSession()
-						.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
-								+ "and language= '" + languageS + "'");
-				ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
-				for (Object object : messageList){
-					addmaplist(object);
-					map = (Map<String, Object>) object;
-					Api = new ApiResultI18n();
-					Api.setCode(apiResultI18n.getCode());
-					Api.setMsg(map.get("MESSAGE") + "");
-					Api.setData(apiResultI18n.getData());
-				}
-			} else {
-				Api = new ApiResultI18n();
-				Api.setCode(apiResultI18n.getCode());
-				Api.setMsg(message);
-				Api.setData(apiResultI18n.getData());
-			}
+    			informationSheet = new InformationSheet();
+    			informationSheet.setCode(apiResultI18n.getCode());
+    			// 获取到数据库中的信息对象
+    			Object objA = SessionContext.getSession().getSqlSession()
+    					.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
+    							+ "and language= '" + languageS + "'");
+    			ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
+    			for (Object object : messageList){
+    				addmaplist(object);
+    				map = (Map<String, Object>) object;
+    				Api = new ApiResultI18n();
+    				Api.setCode(apiResultI18n.getCode());
+    				Api.setMsg(map.get("MESSAGE") + "");
+    				Api.setData(apiResultI18n.getData());
+    			}
+    		} else {
+    			Api = new ApiResultI18n();
+    			Api.setCode(apiResultI18n.getCode());
+    			Api.setMsg(message);
+    			Api.setData(apiResultI18n.getData());
+    		}
         	MR.setMessage(Api);
-			MR.setValidation(Api);
-			MR.setData(messageResult.getData());
+    		MR.setValidation(Api);
+    		MR.setData(messageResult.getData());
         }
 		return MR;
 	}
 	
 	//将数据库中获得的国际化存入内存
+	@SuppressWarnings("unchecked")
 	public void addmaplist(Object object){
-		@SuppressWarnings("unchecked")
 		Map<String, Object> map =  (Map<String, Object>) object;
 		String language = map.get("LANGUAGE").toString();
 	    Map<String, String> mapA  = TransactionComponentAutoRegistry.mapList.get(language);
 		mapA.put(map.get("CODE").toString(), map.get("MESSAGE").toString());
 	}
+	
+//	@SuppressWarnings("unchecked")
+//	@Transaction
+//	public void searchMapList(MessageResult messageResult,String message,InformationSheet informationSheet,ApiResultI18n Api,Map<String, Object> map,ArrayList<ApiResultI18n> list,MessageResult MR) {
+//		  ArrayList<ApiResultI18n> listApi = (ArrayList<ApiResultI18n>)messageResult.getData();
+//		  for (ApiResultI18n obj :listApi) {
+//				// 根据code获取配置文件中的message
+//				message = getMessageUtil.getMessage(obj.getCode());
+//				if (message == null || message == "") {
+////					inforService.getMessage(obj, Api, list,languageS);
+//					informationSheet = new InformationSheet();
+//					informationSheet.setCode(obj.getCode());
+//					// 获取到数据库中的信息对象
+//					Object objA = SessionContext.getSession().getSqlSession()
+//							.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
+//									+ "and language= '" + languageS + "'");
+//					ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
+//					for (Object object : messageList){
+//						addmaplist(object);
+//						map = (Map<String, Object>) object;
+//						Api = new ApiResultI18n();
+//						Api.setCode(obj.getCode());
+//						Api.setMsg(map.get("MESSAGE") + "");
+//						Api.setData(obj.getData());
+//						list.add(Api);
+//					}
+//					
+//				} else {
+//					Api = new ApiResultI18n();
+//					Api.setCode(obj.getCode());
+//					Api.setMsg(message);
+//					Api.setData(obj.getData());
+//					list.add(Api);
+//				}
+//			}
+//		    MR.setMessage(list);
+//			MR.setValidation(list);
+//			MR.setData(messageResult.getData());
+//	}
+	
+//	@SuppressWarnings("unchecked")
+//	@Transaction
+//	public void searchMapObject(MessageResult messageResult,String message,InformationSheet informationSheet,ApiResultI18n Api,Map<String, Object> map,ArrayList<ApiResultI18n> list,MessageResult MR) {
+//		ApiResultI18n apiResultI18n = (ApiResultI18n)messageResult.getData();
+//    	message = getMessageUtil.getMessage(apiResultI18n.getCode());
+//    	if (message == null || message == "") {
+//			informationSheet = new InformationSheet();
+//			informationSheet.setCode(apiResultI18n.getCode());
+//			// 获取到数据库中的信息对象
+//			Object objA = SessionContext.getSession().getSqlSession()
+//					.query("select * from INFORMATION_SHEET where code = " + informationSheet.getCode()
+//							+ "and language= '" + languageS + "'");
+//			ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
+//			for (Object object : messageList){
+//				addmaplist(object);
+//				map = (Map<String, Object>) object;
+//				Api = new ApiResultI18n();
+//				Api.setCode(apiResultI18n.getCode());
+//				Api.setMsg(map.get("MESSAGE") + "");
+//				Api.setData(apiResultI18n.getData());
+//			}
+//		} else {
+//			Api = new ApiResultI18n();
+//			Api.setCode(apiResultI18n.getCode());
+//			Api.setMsg(message);
+//			Api.setData(apiResultI18n.getData());
+//		}
+//    	MR.setMessage(Api);
+//		MR.setValidation(Api);
+//		MR.setData(messageResult.getData());
+//	}
+
 
 }

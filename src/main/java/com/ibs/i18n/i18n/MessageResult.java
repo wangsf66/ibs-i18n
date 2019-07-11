@@ -56,6 +56,7 @@ ArrayList<ApiResultI18n> list = null;
 		this.message = message;
 	}
 
+	//为data添加数据，数据类型可为list可为一个对象
 	public void addObject(int code,Object data){
 		if(list==null) {
 			list = new ArrayList<ApiResultI18n>();

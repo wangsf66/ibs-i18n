@@ -11,14 +11,16 @@ public class I18nMessageUtil {
     }
     
     public static String getMessage(String language,int code) throws IOException {
-       //initMessageSourceAccessor(language);
         return I18nMessageUtil.getMessage(language,code,TransactionComponentAutoRegistry.mapList);
     }
  
     public static String getMessage(String language,int code,Map<String,Map<String,String>> mapList){
-        String message = "";
         Map<String, String> map  = mapList.get(language);
-        message = map.get(code+"");
-        return message;
+        String message  = map.get(code+"");
+        if(message ==""||message ==null) {
+        	return "";
+        }else {
+        	return message;
+        } 
     }
 }

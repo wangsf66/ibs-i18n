@@ -27,6 +27,7 @@ public class TransactionComponentAutoRegistry extends TransactionComponentRegist
 	@Override
 	public void registerBeanDefinitions(AnnotationMetadata importingClassMetadata, BeanDefinitionRegistry registry) {
 		Map<String, String> map  = null;
+		//扫描器
     	FileScanner  sc = new FileScanner(".i18n.properties");
     	List<String> list = sc.scan(true, "i18n/");
     	Properties p  = null;
@@ -36,9 +37,11 @@ public class TransactionComponentAutoRegistry extends TransactionComponentRegist
 			try {
 				in = FileScanner.readByScanPath(file);
 				p.load(in);
+				//国际化键值对
 				map = new HashMap<String, String>((Map)p);
 				File tempFile =new File(file.trim());  
 				int firstIndex = tempFile.getName().indexOf(".");
+				//国际化标识
 		        String baseName = tempFile.getName().substring(0,firstIndex);
 				mapList.put(baseName, map);
 			}catch(IOException e){
