@@ -18,7 +18,7 @@ public class InformationController {
 	private InformationService informationService;
 	
 	@RequestMapping("/insert")
-	public InformationSheet insert(@RequestBody InformationSheet informationSheet ) {
+	public MessageResult insert(@RequestBody InformationSheet informationSheet ) {
 		MessageResult messageResult = new  MessageResult();
 		messageResult.setSuccess(true);
 		messageResult.setStatus("200");
@@ -29,8 +29,17 @@ public class InformationController {
 		System.out.println(message.getData());
 		Map<String, String> mapA = TransactionComponentAutoRegistry.mapList.get("zh_CN");
 		System.out.println(mapA.size());
-		return informationSheet = informationService.insert(informationSheet);
+		return message;
 	}
+	
+	@RequestMapping("/MessageResult")
+	public MessageResult insertMessageResult(@RequestBody MessageResult messageResult ) {
+		String language = "zh_CN";
+		MessageResult message = informationService.getMessageResult(messageResult,language);
+		System.out.println(message.getData());
+		return message;
+	}
+
 
 	@RequestMapping("/update")
 	public InformationSheet update(@RequestBody InformationSheet informationSheet ) {
