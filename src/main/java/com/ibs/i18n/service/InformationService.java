@@ -17,6 +17,9 @@ import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.util.TransactionComponentAutoRegistry;
 import com.ibs.i18n.util.getMessageUtil;
 
+
+
+
 @TransactionComponent
 public class InformationService {
 	
@@ -212,7 +215,7 @@ public class InformationService {
 		public ApiResultI18n addsqlObjectMessage(ApiResultI18n apiResultI18n) {
 			ApiResultI18n Api = null;
 			Map<String, Object> map = null;
-			// 获取到数据库中的信息对象
+			//获取到数据库中的信息对象
 			Object objA = SessionContext.getSession().getSqlSession()
 					.query("select * from INFORMATION_SHEET where code = " + apiResultI18n.getCode()
 							+ "and language= '" + languageS + "'");
