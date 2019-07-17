@@ -10,13 +10,13 @@ public class I18nMessageUtil {
     
     }
     
-    public static String getMessage(String language,int code) throws IOException {
+    public static String getMessage(String language,String code) throws IOException {
         return I18nMessageUtil.getMessage(language,code,TransactionComponentAutoRegistry.mapList);
     }
  
-    public static String getMessage(String language,int code,Map<String,Map<String,String>> mapList){
+    public static String getMessage(String language,String code,Map<String,Map<String,String>> mapList){
         Map<String, String> map  = mapList.get(language);
-        String message  = map.get(code+"");
+        String message  = map.get(code);
         if(message ==""||message ==null) {
         	return "";
         }else {

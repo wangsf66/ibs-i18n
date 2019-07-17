@@ -1,10 +1,10 @@
 package com.ibs.i18n.i18n;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class MessageResult{
 	
-ArrayList<ApiResultI18n> list = null;
 	
     private boolean success = true;
     
@@ -57,14 +57,68 @@ ArrayList<ApiResultI18n> list = null;
 	}
 
 	//为data添加数据，数据类型可为list可为一个对象
-	public void addObject(int code,Object data){
-		if(list==null) {
-			list = new ArrayList<ApiResultI18n>();
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void addObject(String code,Object data){
+		if(this.data==null) {
 			this.data = new ApiResultI18n(code,data);
-			list.add(new ApiResultI18n(code,data));
-		}else if(list.size()>0){
-			list.add(new ApiResultI18n(code,data));
-			this.data = list;
+		}else {
+			Object obj = this.data;
+			if(obj instanceof List) {
+				((List)this.data).add(new ApiResultI18n(code,data));
+			}else {
+				this.data = new ArrayList<ApiResultI18n>();
+				((List)this.data).add(obj);
+				((List)this.data).add(new ApiResultI18n(code,data));
+			}
 		}
 	}
+	
+	@SuppressWarnings({ "unchecked", "rawtypes" })
+	public void addData(String code,Object data){
+		if(this.data==null) {
+			this.data = new ApiResultI18n(code,data);
+		}else {
+			Object obj = this.data;
+			if(obj instanceof List){
+				((List)this.data).add(new ApiResultI18n(code,data));
+			}else{
+				this.data = new ArrayList<ApiResultI18n>();
+				((List)this.data).add(obj);
+				((List)this.data).add(new ApiResultI18n(code,data));
+			}
+		}
+	}
+	//为data添加数据，数据类型可为list可为一个对象
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		public void addValidation(String code,Object data){
+			if(this.validation==null) {
+				this.validation = new ApiResultI18n(code,data);
+			}else {
+				Object obj = this.validation;
+				if(obj instanceof List) {
+					((List)this.validation).add(new ApiResultI18n(code,data));
+				}else {
+					this.validation = new ArrayList<ApiResultI18n>();
+					((List)this.validation).add(obj);
+					((List)this.validation).add(new ApiResultI18n(code,data));
+				}
+				
+			}
+		}
+		//为data添加数据，数据类型可为list可为一个对象
+		@SuppressWarnings({ "unchecked", "rawtypes" })
+		public void addMessage(String code,Object data){
+			if(this.message==null) {
+				this.message = new ApiResultI18n(code,data);
+			}else {
+				Object obj = this.message;
+				if(obj instanceof List) {
+					((List)this.message).add(new ApiResultI18n(code,data));
+				}else {
+					this.message = new ArrayList<ApiResultI18n>();
+					((List)this.message).add(obj);
+					((List)this.message).add(new ApiResultI18n(code,data));
+				}
+			}
+		}
 }

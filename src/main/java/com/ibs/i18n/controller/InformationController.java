@@ -1,6 +1,7 @@
 package com.ibs.i18n.controller;
 
 
+import java.util.ArrayList;
 import java.util.Map;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -23,8 +24,8 @@ public class InformationController {
 		MessageResult messageResult = new  MessageResult();
 		messageResult.setSuccess(true);
 		messageResult.setStatus("200");
-		messageResult.addObject(1000, "wwwwwww");
-	    messageResult.addObject(1111, "sssssss");
+		messageResult.addObject("1000", "wwwwwww");
+	    messageResult.addObject("1111", "sssssss");
 		String language = "zh_CN";
 		MessageResult message = informationService.getMessageResult(messageResult,language);
 		System.out.println(message.getData());
@@ -41,7 +42,6 @@ public class InformationController {
 		return message;
 	}
 
-
 	@RequestMapping("/update")
 	public InformationSheet update(@RequestBody InformationSheet informationSheet ) {
 		return informationService.update(informationSheet);
@@ -54,4 +54,5 @@ public class InformationController {
 	public Object query(@RequestBody InformationSheet informationSheet ) {
 		return informationService.query(informationSheet);
 	}
+	
 }

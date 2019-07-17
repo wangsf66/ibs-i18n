@@ -2,18 +2,27 @@ package com.ibs.i18n.i18n;
 
 import java.io.IOException;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
+import com.ibs.i18n.service.InformationService;
+
 public class ApiResultI18n{
+	
+	
+	@Autowired
+	private InformationService informationService;
 	 
     /**
      * 返回码，1000 正常
      */
-    private int code = 1000;
+    private String code ;
 
-    public int getCode() {
+  
+	public String getCode() {
 		return code;
 	}
 
-	public void setCode(int code) {
+	public void setCode(String code) {
 		this.code = code;
 	}
 
@@ -43,7 +52,14 @@ public class ApiResultI18n{
 		this.data = data;
 	}
 	
-	public ApiResultI18n(int code, Object data) {
+	public ApiResultI18n(String code, Object data, String msg) {
+		super();
+		this.code = code;
+		this.msg = msg;
+		this.data = data;
+	}
+
+	public ApiResultI18n(String code, Object data) {
 		super();
 		this.code = code;
 		this.data = data;
@@ -54,11 +70,11 @@ public class ApiResultI18n{
      */
     public ApiResultI18n() {}
     
-    public static ApiResultI18n failure(int code,String language) {
+    public static ApiResultI18n failure(String code,String language) {
         return failureResult(code, language);
     }
 
-    public static ApiResultI18n failureResult(int code, String language) {
+    public static ApiResultI18n failureResult(String code, String language) {
         ApiResultI18n result = new ApiResultI18n();
         String msg = null;
         try {
