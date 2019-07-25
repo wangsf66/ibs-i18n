@@ -3,25 +3,35 @@ package com.ibs.i18n.i18n;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.ibs.parent.code.entity.column.Column;
+
 public class MessageResult{
 	
-	
-    private boolean success = true;
-    
+	@Column("success")
+	private int success = 1;
+	@Column("status")
     private String status;
-    
+	@Column("data")
     private Object data;
-   
+	@Column("validation")
 	private Object validation;
-    
-    private Object message;
+	@Column("error")
+    private Object error;
 
-    public boolean isSuccess() {
+    public int getSuccess() {
 		return success;
 	}
 
-	public void setSuccess(boolean success) {
+	public void setSuccess(int success) {
 		this.success = success;
+	}
+
+	public Object getError() {
+		return error;
+	}
+
+	public void setError(Object error) {
+		this.error = error;
 	}
 
 	public String getStatus() {
@@ -48,31 +58,6 @@ public class MessageResult{
 		this.validation = validation;
 	}
 
-	public Object getMessage() {
-		return message;
-	}
-
-	public void setMessage(Object message) {
-		this.message = message;
-	}
-
-	//为data添加数据，数据类型可为list可为一个对象
-	@SuppressWarnings({ "unchecked", "rawtypes" })
-	public void addObject(String code,Object data){
-		if(this.data==null) {
-			this.data = new ApiResultI18n(code,data);
-		}else {
-			Object obj = this.data;
-			if(obj instanceof List) {
-				((List)this.data).add(new ApiResultI18n(code,data));
-			}else {
-				this.data = new ArrayList<ApiResultI18n>();
-				((List)this.data).add(obj);
-				((List)this.data).add(new ApiResultI18n(code,data));
-			}
-		}
-	}
-	
 	@SuppressWarnings({ "unchecked", "rawtypes" })
 	public void addData(String code,Object data){
 		if(this.data==null) {
@@ -107,17 +92,17 @@ public class MessageResult{
 		}
 		//为data添加数据，数据类型可为list可为一个对象
 		@SuppressWarnings({ "unchecked", "rawtypes" })
-		public void addMessage(String code,Object data){
-			if(this.message==null) {
-				this.message = new ApiResultI18n(code,data);
+		public void addError(String code,Object data){
+			if(this.error==null) {
+				this.error = new ApiResultI18n(code,data);
 			}else {
-				Object obj = this.message;
+				Object obj = this.error;
 				if(obj instanceof List) {
-					((List)this.message).add(new ApiResultI18n(code,data));
+					((List)this.error).add(new ApiResultI18n(code,data));
 				}else {
-					this.message = new ArrayList<ApiResultI18n>();
-					((List)this.message).add(obj);
-					((List)this.message).add(new ApiResultI18n(code,data));
+					this.error = new ArrayList<ApiResultI18n>();
+					((List)this.error).add(obj);
+					((List)this.error).add(new ApiResultI18n(code,data));
 				}
 			}
 		}

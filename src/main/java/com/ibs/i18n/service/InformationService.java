@@ -12,8 +12,9 @@ import com.douglei.tools.utils.IdentityUtil;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.ApiResultI18n;
 import com.ibs.i18n.i18n.MessageResult;
-import com.ibs.i18n.util.TransactionComponentAutoRegistry;
+import com.ibs.i18n.redis.RedisUtil;
 import com.ibs.i18n.util.getMessageUtil;
+import com.ibs.parent.code.entity.column.Columns;
 
 @TransactionComponent
 public class InformationService {
@@ -21,30 +22,33 @@ public class InformationService {
 	@Autowired
 	private InformationService informationService;
 	
+	@Autowired
+	private  RedisUtil redisUtil;
+	
 	private String languageS;
 
 	@Transaction
 	public InformationSheet insert(InformationSheet informationSheet) {
 		informationSheet.setId(IdentityUtil.get32UUID());
-		SessionContext.getSession().getTableSession().save(informationSheet);
+		SessionContext.getTableSession().save(informationSheet);
 		return informationSheet;	
 		}
 	
 	@Transaction
 	public InformationSheet update(InformationSheet informationSheet) {
-		SessionContext.getSession().getTableSession().update(informationSheet);
+		SessionContext.getTableSession().update(informationSheet);
 		return informationSheet;
 	}
 	@Transaction
 	public InformationSheet delete(InformationSheet informationSheet) {
-		SessionContext.getSession().getTableSession().delete(informationSheet);
+		SessionContext.getTableSession().delete(informationSheet);
 		return informationSheet;
 	}
 	
 	@Transaction
 	public Object query(InformationSheet informationSheet) {
 		Object obj = null;
-		obj = SessionContext.getSession().getSqlSession().query("select * from INFORMATION_SHEET");
+		obj = SessionContext.getSqlSession().query("select "+Columns.getNames(InformationSheet.class)+" from INFORMATION_SHEET");
 //		obj = SessionContext.getSession().getTableSession().pageQuery(SysUser.class, 1, 10, "select * from sys_user");
 //		obj = SessionContext.getSession().getSQLSession().pageQuery(1, 10, "com.test", "queryUser");
 		return obj;
@@ -58,7 +62,7 @@ public class InformationService {
     	String message = getMessageUtil.getMessage(code);
  		if(message=="") { 
  			informationSheet.setCode(code); 
- 			Object obj = SessionContext.getSession().getSqlSession().query("select * from INFORMATION_SHEET where code = "+informationSheet.getCode()+"and language= '"+getMessageUtil.getLocalLanguage()+"'");
+ 			Object obj = SessionContext.getSqlSession().query("select "+Columns.getNames(InformationSheet.class)+" from INFORMATION_SHEET where code = "+informationSheet.getCode()+"and language= '"+getMessageUtil.getLocalLanguage()+"'");
  			ArrayList<Map<String,Object>> messageList = (ArrayList<Map<String,Object>>)obj;
  			Map<String, Object> map = null;
  			for (Object object : messageList) {
@@ -73,7 +77,7 @@ public class InformationService {
 	
 	@Transaction
 	public Object querycode(InformationSheet informationSheet) {
-		Object obj = SessionContext.getSession().getSqlSession().query("select * from INFORMATION_SHEET where code = "+informationSheet.getCode());
+		Object obj = SessionContext.getSqlSession().query("select "+Columns.getNames(InformationSheet.class)+" from INFORMATION_SHEET where code = "+informationSheet.getCode());
 		return obj;
 	}
 	
@@ -81,7 +85,7 @@ public class InformationService {
 		ArrayList<ApiResultI18n> list = new ArrayList<ApiResultI18n>();
 		MessageResult MR = new MessageResult();
 		MR.setStatus("200");
-		MR.setSuccess(true);
+		MR.setSuccess(1);
 		String temp = "";
 		Object object = null;
 		if (language != null && language != "") {
@@ -98,10 +102,10 @@ public class InformationService {
 	        	searchMapObject(messageResult,list,MR,object,temp);	
 	        }
 		}
-		if(messageResult.getMessage()!=null) { 
+		if(messageResult.getError()!=null) { 
 			temp = "Message";
-			object = messageResult.getMessage();
-			if(messageResult.getMessage() instanceof List){
+			object = messageResult.getError();
+			if(messageResult.getError() instanceof List){
 				searchMapList(messageResult,list,MR,object,temp);
 	        }else {
 	        	searchMapObject(messageResult,list,MR,object,temp);	
@@ -117,8 +121,18 @@ public class InformationService {
 	        }
 		}
 		
-		if(MR.getMessage()!=null||MR.getValidation()!=null) {
-			MR.setSuccess(false);
+		if(MR.getData()==null) {
+			if(MR.getError()==null&&MR.getValidation()==null) {
+				MR.setSuccess(1);
+			}else {
+				MR.setSuccess(0);
+			}
+		}else {
+			if(MR.getError()==null&&MR.getValidation()==null) {
+				MR.setSuccess(1);
+			}else {
+				MR.setSuccess(2);
+			}
 		}
 		return MR;
 	}
@@ -173,7 +187,7 @@ public class InformationService {
 	//当data为数组时，为message和validation赋值
 	public void returnMRList(MessageResult MR,ArrayList<ApiResultI18n> list,MessageResult messageResult,String temp) {
 		if(temp.contains("Message")) {
-			MR.setMessage(list);
+			MR.setError(list);
 		}else if(temp.contains("Validation")) {
 			MR.setValidation(list);
 		}else {
@@ -221,7 +235,7 @@ public class InformationService {
 	    //当data为单个对象时，为message和validation赋值
 		public void returnMR(MessageResult MR,ApiResultI18n Api,MessageResult messageResult,String temp) {
 			if(temp.contains("Message")) {
-				MR.setMessage(Api);
+				MR.setError(Api);
 			}else if(temp.contains("Validation")) {
 				MR.setValidation(Api);
 			}else {
@@ -230,14 +244,14 @@ public class InformationService {
 			
 		  }
 	
-		
+	
 	    //将数据库中获得的国际化存入内存
 		@SuppressWarnings("unchecked")
 		public void addmaplist(Object object){
 			Map<String, Object> map =  (Map<String, Object>) object;
 			String language = map.get("LANGUAGE").toString();
-		    Map<String, String> mapA  = TransactionComponentAutoRegistry.mapList.get(language);
-			mapA.put(map.get("CODE").toString(), map.get("MESSAGE").toString());
+			redisUtil.hmset(language, map);
+			System.out.println(redisUtil.hmget("zh_CN"));
 		}
 		
 		@SuppressWarnings("unchecked")
@@ -246,8 +260,8 @@ public class InformationService {
 			ApiResultI18n Api = null;
 			Map<String, Object> map = null;
 			//获取到数据库中的信息对象
-			Object objA = SessionContext.getSession().getSqlSession()
-					.query("select * from INFORMATION_SHEET where code = " + apiResultI18n.getCode()
+			Object objA = SessionContext.getSqlSession()
+					.query("select "+Columns.getNames(MessageResult.class)+" from INFORMATION_SHEET where code = " + apiResultI18n.getCode()
 							+ "and language= '" + languageS + "'");
 			ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
 			for (Object object : messageList){
@@ -267,8 +281,8 @@ public class InformationService {
 			Map<String, Object> map = null;
 			ApiResultI18n Api = null;
 			// 获取到数据库中的信息对象
-			Object objA = SessionContext.getSession().getSqlSession()
-					.query("select * from INFORMATION_SHEET where code = " + obj.getCode()
+			Object objA = SessionContext.getSqlSession()
+					.query("select "+Columns.getNames(MessageResult.class)+" from INFORMATION_SHEET where code = " + obj.getCode()
 							+ "and language= '" + languageS + "'");
 			ArrayList<Map<String, Object>> messageList = (ArrayList<Map<String, Object>>) objA;
 			for (Object object : messageList){

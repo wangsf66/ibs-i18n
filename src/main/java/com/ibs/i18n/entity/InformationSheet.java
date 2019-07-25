@@ -1,9 +1,15 @@
 package com.ibs.i18n.entity;
 
+import com.ibs.parent.code.entity.column.Column;
+
 public class InformationSheet {
+	@Column
 	private String id;
+	@Column
 	private String code;
+	@Column
 	private String message;
+	@Column
 	private String language;
 	
 	

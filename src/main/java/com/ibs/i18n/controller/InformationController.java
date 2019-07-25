@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.InformationService;
-import com.ibs.i18n.util.TransactionComponentAutoRegistry;
 
 @RestController
 @RequestMapping("/information")
@@ -22,15 +21,13 @@ public class InformationController {
 	@RequestMapping("/insert")
 	public MessageResult insert(@RequestBody InformationSheet informationSheet ) {
 		MessageResult messageResult = new  MessageResult();
-		messageResult.setSuccess(true);
+		messageResult.setSuccess(1);
 		messageResult.setStatus("200");
-		messageResult.addObject("1000", "wwwwwww");
-	    messageResult.addObject("1111", "sssssss");
+		messageResult.addData("1000", "wwwwwww");
+	    messageResult.addData("1111", "sssssss");
 		String language = "zh_CN";
 		MessageResult message = informationService.getMessageResult(messageResult,language);
 		System.out.println(message.getData());
-		Map<String, String> mapA = TransactionComponentAutoRegistry.mapList.get("zh_CN");
-		System.out.println(mapA.size());
 		return message;
 	}
 	

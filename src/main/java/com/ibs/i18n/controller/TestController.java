@@ -2,19 +2,27 @@ package com.ibs.i18n.controller;
 
 
 import java.util.ArrayList;
+import java.util.Map;
+
+import javax.servlet.http.HttpServletRequest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
+import com.alibaba.fastjson.JSONObject;
+import com.ibs.filter.CorsBase;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.MessageResult;
+import com.ibs.i18n.redis.RedisUtil;
 import com.ibs.i18n.service.InformationService;
 
 @RestController
 @RequestMapping("/information")
-public class TestController {
+public class TestController extends CorsBase{
 	
 	public static ArrayList<InformationSheet> list = new ArrayList<InformationSheet>();
+
 	
 	static {
 		InformationSheet informationSheet = new InformationSheet("1110","model error","zh_CN");
@@ -27,19 +35,48 @@ public class TestController {
 		list.add(informationSheet); 
 		list.add(infor);
 		list.add(inforB);
-		list.add(inforC);
 		list.add(inforD);
-		list.add(inforA);
 		list.add(inf);
+		list.add(inforC);
+		list.add(inforA);
+	
 	}
 	
 	@Autowired
 	private InformationService informationService;
-	
-	//单条插入
-	@RequestMapping("/test/{state}")
-	public MessageResult test(@PathVariable(name="state") String state){
-		 InformationSheet informationSheet = new InformationSheet("13410","model","zh_CN");
+		//单条插入
+		@RequestMapping("/test")
+	    public MessageResult test(HttpServletRequest request){	
+		 String state = request.getParameter("state");
+		 InformationSheet informationSheet = new InformationSheet("1213","1","zh_CN");
+		 MessageResult messageResult = new MessageResult();
+		 MessageResult Mr = null;
+		 if(informationSheet.getLanguage()=="") {
+			 if(state.equals("")||state.equals("V")||state.equals("DV")||state.equals("VM")||state.equals("DVM")) {
+			     messageResult.addValidation("api.response.code.phoneIllegal", informationSheet);
+			 }
+		 }else{
+			try {
+				informationService.insert(informationSheet);
+				if(state.equals("")||state.equals("D")||state.equals("DV")||state.equals("DM")||state.equals("DVM")) {
+				    messageResult.addData("api.response.code.success", informationSheet);
+				}
+			}catch(Exception e) {
+				e.printStackTrace();
+				if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
+				    messageResult.addError("api.response.code.inertError", informationSheet);
+				}
+			} 
+		 }
+		 Mr = informationService.getMessageResult(messageResult, null);
+		 return Mr;
+		  
+	}
+		
+		@RequestMapping("/test2")
+	    public MessageResult test2(@RequestBody JSONObject jsonObject){
+		 String state=jsonObject.get("state").toString();	
+		 InformationSheet informationSheet = new InformationSheet("1213","3434","zh_CN");
 		 MessageResult messageResult = new MessageResult();
 		 MessageResult Mr = null;
 		 if(informationSheet.getLanguage()=="") {
@@ -54,17 +91,19 @@ public class TestController {
 				}
 			}catch(Exception e) {
 				if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
-				    messageResult.addMessage("api.response.code.inertError", informationSheet);
+				    messageResult.addError("api.response.code.inertError", informationSheet);
 				}
 			} 
 		 }
 		 Mr = informationService.getMessageResult(messageResult, null);
 		 return Mr;
+		  
 	}
 	
-	//多条插入
-	@RequestMapping("/testList/{state}")
-	public MessageResult testList(@PathVariable(name="state") String state){
+	 //多条插入
+	 @RequestMapping("/testList")
+	 public MessageResult testList(HttpServletRequest request){
+		 String state = request.getParameter("state");
 		 //D、M、V、DM、DV、VM、DVM
 		 MessageResult messageResult = new MessageResult();
 		 MessageResult Mr = null;
@@ -81,7 +120,7 @@ public class TestController {
 					}
 				}catch(Exception e) {
 					if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
-					  messageResult.addMessage("api.response.code.inertError", obj);
+					  messageResult.addError("api.response.code.inertError", obj);
 					}
 				} 
 			 } 
@@ -89,4 +128,18 @@ public class TestController {
 		 Mr = informationService.getMessageResult(messageResult, null);
 		 return Mr;
 	}
+	
+	@Autowired
+	private RedisUtil redisUtil;
+	
+	@RequestMapping("/test1")
+	public Map<Object,Object>  test() {
+	     String key = "hash";
+	     redisUtil.set(key, "111"); 
+	     return redisUtil.hmget("en_US");
+	}
+	
+	
+
+	
 }
