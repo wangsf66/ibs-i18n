@@ -26,9 +26,10 @@
 			<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
 		</datasource>
 		
-		<mappings>
+		<mappings searchAll="true">
 			<mapping path="mapper/sql/sql.smp.xml" />
 			<mapping path="mapper/table" />
+			<mapping path="mappings" />
 		</mappings>
 	</environment>
 	

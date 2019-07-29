@@ -94,13 +94,14 @@ public class InformationService {
 			this.languageS = getMessageUtil.getLocalLanguage();
 		}
 		if(messageResult.getData()!=null) {
-			temp = "Data";
+//			temp = "Data";
 			object = messageResult.getData();
-			if(messageResult.getData() instanceof List){
-				searchMapList(messageResult,list,MR,object,temp);
-	        }else {
-	        	searchMapObject(messageResult,list,MR,object,temp);	
-	        }
+//			if(messageResult.getData() instanceof List){
+//				searchMapList(messageResult,list,MR,object,temp);
+//	        }else {
+//	        	searchMapObject(messageResult,list,MR,object,temp);	
+//	        }
+			searchDataMapList(object,MR);
 		}
 		if(messageResult.getError()!=null) { 
 			temp = "Message";
@@ -138,6 +139,25 @@ public class InformationService {
 	}
 	
 	@SuppressWarnings("unchecked")
+	public void searchDataMapList(Object object,MessageResult MR) {
+		//接收成功的数据
+		ArrayList<Object> list = new ArrayList<Object>();
+		//用于转换
+		ArrayList<ApiResultI18n> ObjectList =null;
+		ApiResultI18n api = null;
+		if(object instanceof List){
+			ObjectList =(ArrayList<ApiResultI18n>)object;
+			for(ApiResultI18n obj:ObjectList) {
+				list.add(obj.getData());
+			}
+			MR.setData(list);
+        }else{
+        	api = (ApiResultI18n)object;
+        	MR.setData(api.getData());
+        }
+	}
+	
+	@SuppressWarnings("unchecked")
 	public void searchMapList(MessageResult messageResult,ArrayList<ApiResultI18n> list,MessageResult MR,Object object,String temp ) {
 		ApiResultI18n Api = null;
 		ApiResultI18n apiResultI18n = null;
@@ -147,7 +167,7 @@ public class InformationService {
 		String message = "";
 		ArrayList<Object> ObjectList =(ArrayList<Object>)object;
 		for(Object obj:ObjectList) {
-			//判断数据是map对象还是ApiResultI18n对象
+			 //判断数据是map对象还是ApiResultI18n对象
 			 if(obj instanceof java.util.LinkedHashMap){
 				    map  = (HashMap<String,String>)obj;
 					message = getMessageUtil.getMessage(map.get("code"));
@@ -189,8 +209,6 @@ public class InformationService {
 			MR.setError(list);
 		}else if(temp.contains("Validation")) {
 			MR.setValidation(list);
-		}else {
-			MR.setData(list);
 		}
 	  }
 	
@@ -237,10 +255,7 @@ public class InformationService {
 				MR.setError(Api);
 			}else if(temp.contains("Validation")) {
 				MR.setValidation(Api);
-			}else {
-				MR.setData(Api);  
 			}
-			
 		  }
 	
 	

@@ -32,10 +32,12 @@ public class TestController{
 		InformationSheet inforA = new InformationSheet("123234","2","en_US");
 		InformationSheet inforC = new InformationSheet("12eret","4","zh_CN");
 		list.add(informationSheet); 
+		list.add(inf);
+		
 		list.add(infor);
 		list.add(inforB);
 		list.add(inforD);
-		list.add(inf);
+
 		list.add(inforC);
 		list.add(inforA);
 	
@@ -61,9 +63,8 @@ public class TestController{
 				    messageResult.addData("api.response.code.success", informationSheet);
 				}
 			}catch(Exception e) {
-				e.printStackTrace();
 				if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
-				    messageResult.addError("api.response.code.inertError", informationSheet);
+//				    messageResult.addError("api.response.code.inertError", informationSheet);
 				}
 			} 
 		 }
