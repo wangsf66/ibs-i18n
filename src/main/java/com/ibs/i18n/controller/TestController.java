@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
-import com.ibs.filter.CorsBase;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.redis.RedisUtil;
@@ -19,7 +18,7 @@ import com.ibs.i18n.service.InformationService;
 
 @RestController
 @RequestMapping("/information")
-public class TestController extends CorsBase{
+public class TestController{
 	
 	public static ArrayList<InformationSheet> list = new ArrayList<InformationSheet>();
 
@@ -76,24 +75,25 @@ public class TestController extends CorsBase{
 		@RequestMapping("/test2")
 	    public MessageResult test2(@RequestBody JSONObject jsonObject){
 		 String state=jsonObject.get("state").toString();	
-		 InformationSheet informationSheet = new InformationSheet("1213","3434","zh_CN");
 		 MessageResult messageResult = new MessageResult();
 		 MessageResult Mr = null;
-		 if(informationSheet.getLanguage()=="") {
-			 if(state.equals("")||state.equals("V")||state.equals("DV")||state.equals("VM")||state.equals("DVM")) {
-			     messageResult.addValidation("api.response.code.phoneIllegal", informationSheet);
-			 }
-		 }else{
-			try {
-				informationService.insert(informationSheet);
-				if(state.equals("")||state.equals("D")||state.equals("DV")||state.equals("DM")||state.equals("DVM")) {
-				    messageResult.addData("api.response.code.success", informationSheet);
-				}
-			}catch(Exception e) {
-				if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
-				    messageResult.addError("api.response.code.inertError", informationSheet);
-				}
-			} 
+		 for(InformationSheet obj:list){
+			 if(obj.getLanguage()==""){
+				 if(state.equals("")||state.equals("V")||state.equals("DV")||state.equals("VM")||state.equals("DVM")) {
+					 messageResult.addValidation("api.response.code.phoneIllegal", obj);
+				 }
+			 }else{
+				try {
+					informationService.insert(obj);
+					if(state.equals("")||state.equals("D")||state.equals("DV")||state.equals("DM")||state.equals("DVM")) {
+					   messageResult.addData("api.response.code.success", obj);
+					}
+				}catch(Exception e) {
+					if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
+					  messageResult.addError("api.response.code.inertError", obj);
+					}
+				} 
+			 } 
 		 }
 		 Mr = informationService.getMessageResult(messageResult, null);
 		 return Mr;

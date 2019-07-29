@@ -180,8 +180,7 @@ public class InformationService {
 		    			returnMRList(MR,list,messageResult,temp);
 		    		}
 		         }
-		    }	 
-		    
+		    }	  
 	}
 	
 	//当data为数组时，为message和validation赋值
