@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alibaba.fastjson.JSONObject;
+import com.douglei.orm.core.sql.pagequery.PageResult;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.redis.RedisUtil;
@@ -64,7 +65,7 @@ public class TestController{
 				}
 			}catch(Exception e) {
 				if(state.equals("")||state.equals("M")||state.equals("DM")||state.equals("VM")||state.equals("DVM")) {
-//				    messageResult.addError("api.response.code.inertError", informationSheet);
+				    messageResult.addError("api.response.code.inertError", informationSheet);
 				}
 			} 
 		 }
@@ -139,6 +140,21 @@ public class TestController{
 	     redisUtil.set(key, "111"); 
 	     return redisUtil.hmget("en_US");
 	}
+	
+	@RequestMapping("/page")
+	public MessageResult page(HttpServletRequest request) {
+		int pageNum =Integer.parseInt(request.getParameter("pageNum")) ;
+		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
+		return informationService.Page(pageNum, pageSize);
+	}
+	
+	@RequestMapping("/pagepost")
+	public MessageResult page2(@RequestBody JSONObject jsonObject) {
+		int pageNum =Integer.parseInt(jsonObject.get("pageNum").toString()) ;
+		int pageSize =Integer.parseInt(jsonObject.get("pageSize").toString());
+		return informationService.Page(pageNum, pageSize);
+	}
+	
 	
 	
 

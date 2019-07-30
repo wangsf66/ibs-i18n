@@ -8,6 +8,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.context.transaction.component.TransactionComponent;
+import com.douglei.orm.core.sql.pagequery.PageResult;
 import com.douglei.tools.utils.IdentityUtil;
 import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.i18n.ApiResultI18n;
@@ -54,6 +55,16 @@ public class InformationService {
 		return obj;
 	}
 	
+	@Transaction
+	public MessageResult Page(int pageNum,int pageSize) {
+		PageResult<Map<String, Object>> page = SessionContext.getSqlSession().pageQuery(pageNum, pageSize, "select "+Columns.getNames(InformationSheet.class)+" from INFORMATION_SHEET");
+		MessageResult mr = new MessageResult();
+		mr.setStatus("200");
+		mr.setData(page);
+		return mr;
+	}
+	
+	
 	@SuppressWarnings("unchecked")
 	@Transaction
 	public String getMessage(String code) {
@@ -80,13 +91,15 @@ public class InformationService {
 		Object obj = SessionContext.getSqlSession().query("select "+Columns.getNames(InformationSheet.class)+" from INFORMATION_SHEET where code = "+informationSheet.getCode());
 		return obj;
 	}
-	
+	//messageResult返回对象的类型
 	public MessageResult getMessageResult(MessageResult messageResult, String language) {
-		ArrayList<ApiResultI18n> list = new ArrayList<ApiResultI18n>();
+		ArrayList<ApiResultI18n> list = null;
 		MessageResult MR = new MessageResult();
 		MR.setStatus("200");
 		MR.setSuccess(1);
+		//当前数据的类型标识
 		String temp = "";
+		//用于接收当前数据
 		Object object = null;
 		if (language != null && language != "") {
 			this.languageS = language;
@@ -94,31 +107,25 @@ public class InformationService {
 			this.languageS = getMessageUtil.getLocalLanguage();
 		}
 		if(messageResult.getData()!=null) {
-//			temp = "Data";
 			object = messageResult.getData();
-//			if(messageResult.getData() instanceof List){
-//				searchMapList(messageResult,list,MR,object,temp);
-//	        }else {
-//	        	searchMapObject(messageResult,list,MR,object,temp);	
-//	        }
 			searchDataMapList(object,MR);
 		}
 		if(messageResult.getError()!=null) { 
 			temp = "Message";
 			object = messageResult.getError();
 			if(messageResult.getError() instanceof List){
-				searchMapList(messageResult,list,MR,object,temp);
+				searchMapList(list,MR,object,temp);
 	        }else {
-	        	searchMapObject(messageResult,list,MR,object,temp);	
+	        	searchMapObject(list,MR,object,temp);	
 	        }
 		}
 		if(messageResult.getValidation()!=null) { 
 			temp = "Validation";
 			object = messageResult.getValidation();
 			if(messageResult.getValidation() instanceof List){
-				searchMapList(messageResult,list,MR,object,temp);
+				searchMapList(list,MR,object,temp);
 	        }else {
-	        	searchMapObject(messageResult,list,MR,object,temp);	
+	        	searchMapObject(list,MR,object,temp);	
 	        }
 		}
 		
@@ -158,53 +165,49 @@ public class InformationService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void searchMapList(MessageResult messageResult,ArrayList<ApiResultI18n> list,MessageResult MR,Object object,String temp ) {
+	public void searchMapList(ArrayList<ApiResultI18n> list,MessageResult MR,Object object,String temp ) {
 		ApiResultI18n Api = null;
 		ApiResultI18n apiResultI18n = null;
 		list = new ArrayList<ApiResultI18n>();
 		ArrayList<ApiResultI18n> listApi = null;
+		//接收map对象
 		HashMap<String,String> map = null;
+		//接收国际化信息
 		String message = "";
+		//将object对象转为集合
 		ArrayList<Object> ObjectList =(ArrayList<Object>)object;
 		for(Object obj:ObjectList) {
 			 //判断数据是map对象还是ApiResultI18n对象
 			 if(obj instanceof java.util.LinkedHashMap){
 				    map  = (HashMap<String,String>)obj;
+				    //从redis中获取国际化信息
 					message = getMessageUtil.getMessage(map.get("code"));
 					if (message == null || message == "") {
-						apiResultI18n = new ApiResultI18n();
-						apiResultI18n.setCode(map.get("code"));
-						apiResultI18n.setData(map.get("data"));
+						apiResultI18n = new ApiResultI18n(map.get("code"),map.get("data"));
 						listApi = informationService.addsqlListMessage(apiResultI18n,list);
-						returnMRList(MR,listApi,messageResult,temp);
+						returnMRList(MR,listApi,temp);
 		    		} else {
-		    			Api = new ApiResultI18n();
-		    			Api.setCode(map.get("code").toString());
-		    			Api.setMsg(message);
-		    			Api.setData(map.get("data"));
+		    			Api = new ApiResultI18n(map.get("code").toString(),map.get("data"),message);
 		    			list.add(Api);
-		    			returnMRList(MR,list,messageResult,temp);
+		    			returnMRList(MR,list,temp);
 		    		}
 		        }else {
 		        	apiResultI18n = (ApiResultI18n)obj;
 		        	message = getMessageUtil.getMessage(apiResultI18n.getCode());
 		        	if (message == null || message == "") {
 		        		listApi = informationService.addsqlListMessage(apiResultI18n,list);
-		        		returnMRList(MR,listApi,messageResult,temp);
+		        		returnMRList(MR,listApi,temp);
 		    		} else {
-		    			Api = new ApiResultI18n();
-		    			Api.setCode(apiResultI18n.getCode());
-		    			Api.setMsg(message);
-		    			Api.setData(apiResultI18n.getData());
+		    			Api = new ApiResultI18n(apiResultI18n.getCode(),apiResultI18n.getData(),message);
 		    			list.add(Api);
-		    			returnMRList(MR,list,messageResult,temp);
+		    			returnMRList(MR,list,temp);
 		    		}
 		         }
 		    }	  
 	}
 	
 	//当data为数组时，为message和validation赋值
-	public void returnMRList(MessageResult MR,ArrayList<ApiResultI18n> list,MessageResult messageResult,String temp) {
+	public void returnMRList(MessageResult MR,ArrayList<ApiResultI18n> list,String temp) {
 		if(temp.contains("Message")) {
 			MR.setError(list);
 		}else if(temp.contains("Validation")) {
@@ -213,7 +216,7 @@ public class InformationService {
 	  }
 	
 	@SuppressWarnings("unchecked")
-	public void searchMapObject(MessageResult messageResult,ArrayList<ApiResultI18n> list,MessageResult MR,Object object,String temp) {
+	public void searchMapObject(ArrayList<ApiResultI18n> list,MessageResult MR,Object object,String temp) {
 		ApiResultI18n Api = null; 
 		ApiResultI18n apiResultI18n = null;
 		String message = "";
@@ -222,35 +225,27 @@ public class InformationService {
 			HashMap<String,String> map  = (HashMap<String,String>)ob;
 			message = getMessageUtil.getMessage(map.get("code"));
 			if (message == null || message == "") {
-				apiResultI18n = new ApiResultI18n();
-				apiResultI18n.setCode(map.get("code"));
-				apiResultI18n.setData(map.get("data"));
+				apiResultI18n = new ApiResultI18n(map.get("code"),map.get("data"));
 				Api = informationService.addsqlObjectMessage(apiResultI18n);
-        		returnMR(MR,Api,messageResult,temp);
+        		returnMR(MR,Api,temp);
     		} else {
-    			Api = new ApiResultI18n();
-    			Api.setCode(map.get("code").toString());
-    			Api.setMsg(message);
-    			Api.setData(map.get("data"));
-    			returnMR(MR,Api,messageResult,temp);
+    			Api = new ApiResultI18n(map.get("code").toString(),map.get("data"),message);
+    			returnMR(MR,Api,temp);
     		}
         }else {
         	apiResultI18n = (ApiResultI18n)ob;
         	message = getMessageUtil.getMessage(apiResultI18n.getCode());
         	if (message == null || message == "") {
         		Api = informationService.addsqlObjectMessage(apiResultI18n);
-        		returnMR(MR,Api,messageResult,temp);
+        		returnMR(MR,Api,temp);
     		} else {
-    			Api = new ApiResultI18n();
-    			Api.setCode(apiResultI18n.getCode());
-    			Api.setMsg(message);
-    			Api.setData(apiResultI18n.getData());
-    			returnMR(MR,Api,messageResult,temp);
+    			Api = new ApiResultI18n(apiResultI18n.getCode(),apiResultI18n.getData(),message);
+    			returnMR(MR,Api,temp);
     		}
          }
 	  }
 	    //当data为单个对象时，为message和validation赋值
-		public void returnMR(MessageResult MR,ApiResultI18n Api,MessageResult messageResult,String temp) {
+		public void returnMR(MessageResult MR,ApiResultI18n Api,String temp) {
 			if(temp.contains("Message")) {
 				MR.setError(Api);
 			}else if(temp.contains("Validation")) {
@@ -259,19 +254,17 @@ public class InformationService {
 		  }
 	
 	
-	    //将数据库中获得的国际化存入内存
+	    //将数据库中获得的国际化存入redis
 		@SuppressWarnings("unchecked")
 		public void addmaplist(Object object){
 			Map<String, Object> map =  (Map<String, Object>) object;
 			String language = map.get("LANGUAGE").toString();
 			redisUtil.hmset(language, map);
-			System.out.println(redisUtil.hmget("zh_CN"));
 		}
 		
 		@SuppressWarnings("unchecked")
 		@Transaction
 		public ApiResultI18n addsqlObjectMessage(ApiResultI18n apiResultI18n) {
-			ApiResultI18n Api = null;
 			Map<String, Object> map = null;
 			//获取到数据库中的信息对象
 			Object objA = SessionContext.getSqlSession()
@@ -281,19 +274,15 @@ public class InformationService {
 			for (Object object : messageList){
 				addmaplist(object);
 				map = (Map<String, Object>) object;
-				Api = new ApiResultI18n();
-				Api.setCode(apiResultI18n.getCode());
-				Api.setMsg(map.get("MESSAGE") + "");
-				Api.setData(apiResultI18n.getData());
+				apiResultI18n.setMsg(map.get("MESSAGE") + "");
 			}
-			return Api;
+			return apiResultI18n;
 		}
 		
 		@SuppressWarnings("unchecked")
 		@Transaction
 		public ArrayList<ApiResultI18n> addsqlListMessage(ApiResultI18n obj,ArrayList<ApiResultI18n> list) {
 			Map<String, Object> map = null;
-			ApiResultI18n Api = null;
 			// 获取到数据库中的信息对象
 			Object objA = SessionContext.getSqlSession()
 					.query("select "+Columns.getNames(MessageResult.class)+" from INFORMATION_SHEET where code = " + obj.getCode()
@@ -302,11 +291,8 @@ public class InformationService {
 			for (Object object : messageList){
 				addmaplist(object);
 				map = (Map<String, Object>) object;
-				Api = new ApiResultI18n();
-				Api.setCode(obj.getCode());
-				Api.setMsg(map.get("MESSAGE") + "");
-				Api.setData(obj.getData());
-				list.add(Api);
+				obj.setMsg(map.get("MESSAGE") + "");
+				list.add(obj);
 			}
 			return list;
 		}
