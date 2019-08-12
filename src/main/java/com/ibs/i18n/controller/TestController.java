@@ -2,6 +2,7 @@ package com.ibs.i18n.controller;
 
 
 import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 import javax.servlet.http.HttpServletRequest;
@@ -13,9 +14,12 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alibaba.fastjson.JSONObject;
 import com.douglei.orm.core.sql.pagequery.PageResult;
 import com.ibs.i18n.entity.InformationSheet;
+import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.redis.RedisUtil;
+import com.ibs.i18n.service.CityService;
 import com.ibs.i18n.service.InformationService;
+import com.ibs.i18n.service.ProvinceService;
 
 @RestController
 @RequestMapping("/information")
@@ -98,8 +102,7 @@ public class TestController{
 			 } 
 		 }
 		 Mr = informationService.getMessageResult(messageResult, null);
-		 return Mr;
-		  
+		 return Mr;  
 	}
 	
 	 //多条插入
@@ -143,20 +146,50 @@ public class TestController{
 	
 	@RequestMapping("/page")
 	public MessageResult page(HttpServletRequest request) {
-		int pageNum =Integer.parseInt(request.getParameter("pageNum")) ;
+		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
 		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
 		return informationService.Page(pageNum, pageSize);
 	}
 	
 	@RequestMapping("/pagepost")
 	public MessageResult page2(@RequestBody JSONObject jsonObject) {
-		int pageNum =Integer.parseInt(jsonObject.get("pageNum").toString()) ;
+		int pageNum =Integer.parseInt(jsonObject.get("pageNum").toString());
 		int pageSize =Integer.parseInt(jsonObject.get("pageSize").toString());
 		return informationService.Page(pageNum, pageSize);
 	}
 	
+	@Autowired
+	private CityService cityService;
 	
+	@Autowired
+	private ProvinceService provinceService;
 	
-
+	//根据父级id查询子数据
+	@RequestMapping("/selectCityByPid")
+	public MessageResult city(HttpServletRequest request) {
+		int pId =Integer.parseInt(request.getParameter("pId"));
+		return cityService.query(pId);
+	}
 	
+	//查询全部数据
+	@RequestMapping("/selectAllProvinceWithCity")
+	public MessageResult city2() {
+		return provinceService.query();
+	}
+	
+	//根据父级id查询父级信息以及子数据
+	@RequestMapping("/selectAllByProvinceId")
+	public MessageResult city3(HttpServletRequest request) {
+		String id = request.getParameter("id");
+		return provinceService.query(id);
+	}
+	
+	//根据父级id查询city数据并分页
+	@RequestMapping("/selectCityByProvinceIdPage")
+	public MessageResult city4(HttpServletRequest request) {
+		String id =request.getParameter("pid");
+		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
+		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
+		return provinceService.query(id,pageNum,pageSize);
+	}
 }
