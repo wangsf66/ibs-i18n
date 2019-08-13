@@ -102,6 +102,7 @@ public class pdUtil{
 	//in("",""),btn("","")
 	public static String montageSql(String value,String column,String para,String sql) {
 		//将参数分割为数组，以“，”号分割
+		//isInversion(value) 值为true表示取反 false，反之
 		String param[] = para.split(",");
 		if(getMethodName(value).equals("eq")) {
 			if(isInversion(value)){
@@ -163,7 +164,8 @@ public class pdUtil{
 	    		sql = InMethod.toDBScriptStatement(column,param);
 	    	}
 	    }else if(getMethodName(value).equals("ctn")||getMethodName(value).equals("contains")) {
-	    	sql = LikeMethod.toDBScriptStatement(value,column,para);
+	    	isInversion(value);
+	    	sql = LikeMethod.toDBScriptStatement(column, para);
 	    }
 		return sql;
 	}
