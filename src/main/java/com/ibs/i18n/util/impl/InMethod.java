@@ -8,14 +8,14 @@ public  class InMethod extends pdUtil{
 		//取反
 		if(isInversion(params)){
 			if(para.length==1) {
-				return  " and "+column+" is not null  and "+ column +" != '"+para[0]+"'";
+				return  " and "+column+" is not null  and "+ column +" != "+para[0];
 			}else {
-				return  " and "+column+" is not null  and "+ column +"not IN ("+arrayToString(para)+")";  
+				return  " and "+column+" is not null  and "+ column +" not IN ("+arrayToString(para)+")";  
 			}
 		}else {
 			//不取反
             if(para.length==1) {
-            	return  " and "+column+" is not null  and "+ column +" = '"+para[0]+"'";  
+            	return  " and "+column+" is not null  and "+ column +" = "+para[0];  
 			}else {
 				return  " and "+column+" is not null  and "+ column + " IN ("+arrayToString(para)+")";  
 			}
@@ -26,9 +26,9 @@ public  class InMethod extends pdUtil{
 		String param ="";
 		for(int i=0;i<para.length;i++) {
 			if(i==para.length-1) {
-				param +="'"+para[i]+"'";	
+				param += para[i];	
 			}else {
-				param +="'"+para[i]+"'"+",";
+				param += para[i]+",";
 			}
 		}
 		return param;

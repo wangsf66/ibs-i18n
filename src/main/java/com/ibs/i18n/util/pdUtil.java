@@ -55,34 +55,35 @@ public class pdUtil{
         }else {
         	param="";
         }
-		//？号后面的参数组，以&号分割
-		String parameterSet[] = param.split("&");
-		return executeSql(parameterSet);
+		if(param!="") {
+			//？号后面的参数组，以&号分割
+			String parameterSet[] = param.split("&");
+			return executeSql(parameterSet);
+		}else {
+			return "";
+		}
 	}
 	
 	//拼接sql
 	public static String executeSql(String parameterSet[]){
 		String sql = "";
-		String param[]= {};
 		String params[] = {};
 		String column = null;
 	    String value = null;
 		for(String parameter:parameterSet) {
-			//将一对参数分割为列名和值 ，以=分割
+			//将一对参数分割为列名和值 ，以"="分割
 		    params = parameter.split("="); 
 		    column = params[0];
 		    value = params[1];
 		    //如果参数中存在“（”，则参数是内置的方法 ，否则即为普通的值
 		    if(params[1].contains("(")) {
-				//获取方法中的参数
+		    	//获取方法中的参数
 				String para = value.substring(value.indexOf("(")+1,value.indexOf(")"));
 				//参数为空
 				if(valueIsNullStr(para)) {
 					sql += " and "+ column +" is null"; 
 				}else{
-					//将参数分割为数组，以“，”号分割
-					param = para.split(",");
-					sql += montageSql(value,column,para,sql,param);			
+					sql += montageSql(value,column,para,sql);			
 				}	
 			}else {
 			    sql += " and "+ column +" = '"+ params+"'";
@@ -91,7 +92,9 @@ public class pdUtil{
 		return sql;
     }	
 	
-	public static String montageSql(String value,String column,String para,String sql,String param[]) {
+	public static String montageSql(String value,String column,String para,String sql) {
+		//将参数分割为数组，以“，”号分割
+		String param[] = para.split(",");
 		//参数为一个时
 		//eq("")，ge("")，gt("")，le("")，lt("")，ne("")，in("")，like("")，btn("")
 		//参数为多个时
@@ -112,7 +115,7 @@ public class pdUtil{
 	    	sql = BtnMethod.toDBScriptStatement(value,column,param);
 	    }else if(getMethodName(value).equals("in")) {
 	    	sql = InMethod.toDBScriptStatement(value,column,param);
-	    }else if(getMethodName(value).equals("like")) {
+	    }else if(getMethodName(value).equals("ctn")||getMethodName(value).equals("contains")) {
 	    	sql = LikeMethod.toDBScriptStatement(value,column,para);
 	    }
 		return sql;

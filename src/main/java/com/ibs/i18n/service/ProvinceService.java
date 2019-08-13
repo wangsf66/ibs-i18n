@@ -286,7 +286,7 @@ public class ProvinceService {
 	
 	@Transaction
 	public MessageResult queryBtn(String clumes) {
-		Object obj  = SessionContext.getTableSession().query(ProvinceSheet.class,"select "+Columns.getNames(ProvinceSheet.class)+" from PROVINCE_SHEET WHERE 1 =1"+clumes);
+		Object obj  = SessionContext.getTableSession().query(ProvinceSheet.class,"select "+Columns.getNames(ProvinceSheet.class)+" from PROVINCE_SHEET WHERE 1=1"+clumes);
 		MessageResult mr = new MessageResult();
 		mr.setStatus("200");
 		mr.setData(obj);
