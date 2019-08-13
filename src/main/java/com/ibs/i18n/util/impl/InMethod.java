@@ -4,22 +4,8 @@ import com.ibs.i18n.util.pdUtil;
 
 public  class InMethod extends pdUtil{
 	
-	public static String toDBScriptStatement(String params,String column,String para[]) {
-		//取反
-		if(isInversion(params)){
-			if(para.length==1) {
-				return  " and "+column+" is not null  and "+ column +" != "+para[0];
-			}else {
-				return  " and "+column+" is not null  and "+ column +" not IN ("+arrayToString(para)+")";  
-			}
-		}else {
-			//不取反
-            if(para.length==1) {
-            	return  " and "+column+" is not null  and "+ column +" = "+para[0];  
-			}else {
-				return  " and "+column+" is not null  and "+ column + " IN ("+arrayToString(para)+")";  
-			}
-		}  	
+	public static String toDBScriptStatement(String column,String para[]) {
+		return  " and "+ column +" "+notOperator+" IN ("+arrayToString(para)+")";  
     }
 	
 	public static String arrayToString(String para[]) {

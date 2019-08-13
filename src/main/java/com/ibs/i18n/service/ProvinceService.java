@@ -208,7 +208,6 @@ public class ProvinceService {
 					}
 				}
 			}
-		
 		if(StringUtil.notEmpty(pdError(messageResult))||StringUtil.notEmpty(pdValidation(messageResult))) {
 			addmr(messageResult,mr,list);
 		}

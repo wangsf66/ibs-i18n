@@ -6,9 +6,9 @@ public  class LikeMethod extends pdUtil{
 	
 	public static String toDBScriptStatement(String params,String column,String para) {
 		if(isInversion(params)){
-			 return  " and "+column+" is not null and "+ column +" not like "+para;
+			 return  " and "+ column +" "+notOperator+" like "+para;
 		}else {
-			 return  " and "+column+" is not null and "+ column +" like "+para;   
+			 return  " and "+ column +" like "+para;   
 		}  	
     }
 }

@@ -17,17 +17,21 @@ import com.ibs.i18n.util.impl.NeMethod;
 
 public class pdUtil{
 	
+	public static String notOperator = "";
+	
 	//判断会否取反
-	public static boolean isInversion(String params) {
+	public static Boolean isInversion(String params) {
 			if(params.startsWith("!")) {
+				notOperator = "not";
 				return true;
 			}
+			notOperator = "";
 			return false;
 	}
 		
 		//判断会否为空
 	public static boolean valueIsNullStr(String params) {
-			if(params.equals(null)) {
+			if(params.equals(null)){
 				return true;
 			}
 			return false;
@@ -56,6 +60,7 @@ public class pdUtil{
         	param="";
         }
 		if(param!="") {
+			//在正式操作中，这个数组是除以“_”开头的内置参数外的资源数组，在request中进行处理，这块只负读取
 			//？号后面的参数组，以&号分割
 			String parameterSet[] = param.split("&");
 			return executeSql(parameterSet);
@@ -86,35 +91,77 @@ public class pdUtil{
 					sql += montageSql(value,column,para,sql);			
 				}	
 			}else {
-			    sql += " and "+ column +" = '"+ params+"'";
+			    sql += " and "+ column +" = "+ params;
 			}
 		}
 		return sql;
     }	
-	
+	//参数为一个时
+	//eq("")，ge("")，gt("")，le("")，lt("")，ne("")，in("")，like("")，btn("")
+	//参数为多个时
+	//in("",""),btn("","")
 	public static String montageSql(String value,String column,String para,String sql) {
 		//将参数分割为数组，以“，”号分割
 		String param[] = para.split(",");
-		//参数为一个时
-		//eq("")，ge("")，gt("")，le("")，lt("")，ne("")，in("")，like("")，btn("")
-		//参数为多个时
-		//in("",""),btn("","")
 		if(getMethodName(value).equals("eq")) {
-			sql = EqMethod.toDBScriptStatement(value,column,para);
+			if(isInversion(value)){
+				sql = NeMethod.toDBScriptStatement(column,para); 
+			}else {
+				sql = EqMethod.toDBScriptStatement(column,para); 
+			}
 	    }else if(getMethodName(value).equals("ne")) {
-	    	sql = NeMethod.toDBScriptStatement(value,column,para);
+	    	if(isInversion(value)){
+	    		sql = EqMethod.toDBScriptStatement(column,para); 
+			}else {
+				sql = NeMethod.toDBScriptStatement(column,para); 
+			}
 	    }else if(getMethodName(value).equals("gt")) {
-	    	sql = GtMethod.toDBScriptStatement(value,column,para);
+	    	if(isInversion(value)){
+	    		sql = LtMethod.toDBScriptStatement(column,para); 
+			}else {
+				sql = GtMethod.toDBScriptStatement(column,para); 
+			}
 	    }else if(getMethodName(value).equals("ge")) {
-	    	sql = GeMethod.toDBScriptStatement(value,column,para);
+	    	if(isInversion(value)){
+	    		sql = LeMethod.toDBScriptStatement(column,para); 
+			}else {
+				sql = GeMethod.toDBScriptStatement(column,para); 
+			}
 	    }else if(getMethodName(value).equals("le")) {
-	    	sql = LeMethod.toDBScriptStatement(value,column,para);
+	    	if(isInversion(value)){
+	    		sql = GeMethod.toDBScriptStatement(column,para); 
+			}else {
+				sql = LeMethod.toDBScriptStatement(column,para); 
+			}
 	    }else if(getMethodName(value).equals("lt")) {
-	    	sql = LtMethod.toDBScriptStatement(value,column,para);
+	    	if(isInversion(value)){
+	    		sql = GtMethod.toDBScriptStatement(column,para); 
+			}else {
+				sql = LtMethod.toDBScriptStatement(column,para); 
+			}
 	    }else if(getMethodName(value).equals("btn")||getMethodName(value).equals("between")) {
-	    	sql = BtnMethod.toDBScriptStatement(value,column,param);
+	    	//between当传递俩个参数时是一个段，当只传一个值时，取值为0~参数的数据
+	    	if(param.length ==1) {
+	    		if(isInversion(value)){
+	    			sql = GeMethod.toDBScriptStatement(column,para); 
+	    		}else {
+	    			sql = LtMethod.toDBScriptStatement(column,para); 
+	    		}
+	    	}else {
+	    		isInversion(value);
+	    		sql = BtnMethod.toDBScriptStatement(column,param);
+	    	}
 	    }else if(getMethodName(value).equals("in")) {
-	    	sql = InMethod.toDBScriptStatement(value,column,param);
+	    	if(param.length ==1) {
+	    		if(isInversion(value)){
+	    			sql = NeMethod.toDBScriptStatement(column,para); 
+	    		}else {
+	    			sql = EqMethod.toDBScriptStatement(column,para); 
+	    		}
+	    	}else {
+	    		isInversion(value);
+	    		sql = InMethod.toDBScriptStatement(column,param);
+	    	}
 	    }else if(getMethodName(value).equals("ctn")||getMethodName(value).equals("contains")) {
 	    	sql = LikeMethod.toDBScriptStatement(value,column,para);
 	    }
