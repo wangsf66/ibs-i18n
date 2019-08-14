@@ -41,6 +41,7 @@ public class pdUtil{
 	
 	//获取方法名
 	public static String getMethodName(String params) {
+		
 		if(isInversion(params)) {
 			return params.substring(1,params.indexOf("("));
 		}else {
@@ -80,14 +81,15 @@ public class pdUtil{
 			//将一对参数分割为列名和值 ，以"="分割
 		    params = parameter.split("="); 
 		    column = params[0];
-		    value = params[1];
+		    //trim()去掉字符串两端的空格
+		    value = params[1].trim();
 		    //如果参数中存在“（”，则参数是内置的方法 ，否则即为普通的值
 		    if(params[1].contains("(")) {
 		    	//获取方法中的参数
 				String para = value.substring(value.indexOf("(")+1,value.indexOf(")"));
 				//参数为空
 				if(valueIsNullStr(para)) {
-					sql.append(" and "+ column +" is null") ; 
+					sql.append(" and "+ column +" is null"); 
 				}else{
 					sql.append(montageSql(value,column,para,sql,paramList)); 	
 				}	
@@ -107,9 +109,12 @@ public class pdUtil{
 		//isInversion(value) 值为true表示取反 false，反之
 		String param[] = para.split(",");
 		for(String str:param) {
-			paramList.add(str);
+			if(!str.equals(null)) {
+				paramList.add(str);
+			}
 		}
-		switch (getMethodName(value)) {
+		//将函数名全部转为小写
+		switch (getMethodName(value).toLowerCase()) {
 		        case "eq":
 		        	if(param.length ==1) {
 			    		if(isInversion(value)){
@@ -121,7 +126,7 @@ public class pdUtil{
 			    		isInversion(value);
 			    		sqls = InMethod.toDBScriptStatement(column,param);
 			    	}
-		             break;
+		            break;
 	            case "ne":
 	            	if(param.length ==1) {
 	            		if(isInversion(value)){
@@ -173,7 +178,7 @@ public class pdUtil{
 			    		isInversion(value);
 			    		sqls = InMethod.toDBScriptStatement(column,param);
 			    	}
-		             break;
+		            break;
 	            case "btn":
 	            	if(param.length ==1) {
 	    	    		if(isInversion(value)){

@@ -10,6 +10,8 @@ public  class InMethod extends pdUtil{
 		for(int i=0;i<para.length;i++) {
 			if(i==para.length-1) {
 				hql.append("? )");	
+			}else if(para[i].equals(null)) {
+				hql.append(" ");	
 			}else {
 				hql.append("? ,");	
 			}
