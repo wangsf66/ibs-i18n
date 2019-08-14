@@ -3,6 +3,7 @@ package com.ibs.i18n.controller;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -58,7 +59,8 @@ public class ProvinceController {
 	//多条件查询
 	@RequestMapping("/queryCondition")
 	public MessageResult queryCondition(HttpServletRequest request){
-		return provinceService.queryBtn(pdUtil.czSql(request));
+		List<Object> paramList = new ArrayList();
+		return provinceService.queryBtn(pdUtil.czSql(request,paramList),paramList);
 	}
 	
 	

@@ -134,4 +134,13 @@ public class CityService {
 		PageResult<CitySheet> page =SessionContext.getTableSession().pageQuery(CitySheet.class, pageNum, pageSize,"select "+Columns.getNames(CitySheet.class)+" from CITY_SHEET where PID='"+id+"'");
 		return page;
 	}
+	
+	@Transaction
+	public MessageResult queryBtn(String clumes,List<Object> paramList) {
+		Object obj  = SessionContext.getTableSession().query(ProvinceSheet.class,"select "+Columns.getNames(ProvinceSheet.class)+" from CITY_SHEET WHERE 1=1"+clumes,paramList);
+		MessageResult mr = new MessageResult();
+		mr.setStatus("200");
+		mr.setData(obj);
+		return mr;
+	}
 }

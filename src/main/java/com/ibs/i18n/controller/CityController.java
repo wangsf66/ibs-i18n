@@ -1,6 +1,7 @@
 package com.ibs.i18n.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +18,7 @@ import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.CityService;
 import com.ibs.i18n.service.InformationService;
 import com.ibs.i18n.service.ProvinceService;
+import com.ibs.i18n.util.pdUtil;
 
 @RestController
 @RequestMapping("/city")
@@ -57,4 +59,12 @@ public class CityController {
 		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
 		return cityService.Page(pageNum, pageSize);
 	}
+	
+	//多条件查询
+	@RequestMapping("/queryCondition")
+	public MessageResult queryCondition(HttpServletRequest request){
+		List<Object> paramList = new ArrayList();
+		return cityService.queryBtn(pdUtil.czSql(request,paramList),paramList);
+	}	
+		
 }
