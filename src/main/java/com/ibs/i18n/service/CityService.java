@@ -43,24 +43,28 @@ public class CityService {
 				} 
 			 }
 		}
+		
+	
+	  public void updateCity(CitySheet citySheet,MessageResult messageResult){
+			 if(citySheet.getCityName()=="") {
+				 messageResult.addValidation("api.response.code.notNull", citySheet);
+			 }else{
+				try {
+					SessionContext.getTableSession().update(citySheet);
+					messageResult.addData("api.response.code.success", citySheet);
+				}catch(Exception e) {
+					e.printStackTrace();
+				    messageResult.addError("api.response.code.error", citySheet);
+				} 
+			 }
+		}
 	
 	
 	@Transaction
 	public MessageResult update(CitySheet citySheet) {
 		 MessageResult messageResult = new MessageResult();
-		 MessageResult Mr = null;
-		 if(citySheet.getCityName()!=""||citySheet.getpId()!="") {
-			 try{
-					SessionContext.getTableSession().update(citySheet);
-					messageResult.addData("api.response.code.success", citySheet);
-				}catch(Exception e) {
-				    messageResult.addError("api.response.code.error", citySheet);
-				} 
-		 }else{
-			 messageResult.addValidation("api.response.code.notNull", citySheet);
-		 }
-		 Mr = informationService.getMessageResult(messageResult, null);
-		 return Mr;
+		 updateCity(citySheet,messageResult);
+		 return informationService.getMessageResult(messageResult, null);
 	}
 	
 	@Transaction
@@ -121,6 +125,15 @@ public class CityService {
 	}
 	
 	@Transaction
+	public MessageResult updateMany(List<CitySheet> list) {
+		MessageResult messageResult = new MessageResult();
+		for(CitySheet city:list) {
+			updateCity(city,messageResult);
+		 }
+		 return informationService.getMessageResult(messageResult, null);
+	}
+	
+	@Transaction
 	public MessageResult Page(int pageNum,int pageSize) {
 		PageResult<CitySheet> page = SessionContext.getTableSession().pageQuery(CitySheet.class,pageNum, pageSize, "select "+Columns.getNames(CitySheet.class)+" from CITY_SHEET");
 		MessageResult mr = new MessageResult();
@@ -137,7 +150,7 @@ public class CityService {
 	
 	@Transaction
 	public MessageResult queryBtn(String clumes,List<Object> paramList) {
-		Object obj  = SessionContext.getTableSession().query(ProvinceSheet.class,"select "+Columns.getNames(ProvinceSheet.class)+" from CITY_SHEET WHERE 1=1"+clumes,paramList);
+		Object obj  = SessionContext.getTableSession().query(CitySheet.class,"select "+Columns.getNames(CitySheet.class)+" from CITY_SHEET WHERE 1=1"+clumes,paramList);
 		MessageResult mr = new MessageResult();
 		mr.setStatus("200");
 		mr.setData(obj);

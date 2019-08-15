@@ -38,6 +38,11 @@ public class CityController {
 		return 	cityService.insertMany(list);
 	}
 	
+	@RequestMapping("/updateMany")
+	public MessageResult updateMany(@RequestBody List<CitySheet> list){
+		return 	cityService.insertMany(list);
+	}
+	
 	@RequestMapping("/update")
 	public MessageResult update(@RequestBody CitySheet citySheet ) {
 		return cityService.update(citySheet);

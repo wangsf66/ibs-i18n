@@ -41,7 +41,6 @@ public class pdUtil{
 	
 	//获取方法名
 	public static String getMethodName(String params) {
-		
 		if(isInversion(params)) {
 			return params.substring(1,params.indexOf("("));
 		}else {
@@ -109,7 +108,7 @@ public class pdUtil{
 		//isInversion(value) 值为true表示取反 false，反之
 		String param[] = para.split(",");
 		for(String str:param) {
-			if(!str.equals(null)) {
+			if(!str.equals("null")){
 				paramList.add(str);
 			}
 		}

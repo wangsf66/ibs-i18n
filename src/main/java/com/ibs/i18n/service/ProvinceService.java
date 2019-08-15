@@ -54,25 +54,28 @@ public class ProvinceService {
 			} 
 		 }
 	}
+	  
+	  public void updatePro(ProvinceSheet provinceSheet,MessageResult messageResult) {
+		  if(provinceSheet.getProvinceName()=="") {
+			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
+		  }else{
+			try {
+				SessionContext.getTableSession().update(provinceSheet);
+				messageResult.addData("api.response.code.success", provinceSheet);
+			}catch(Exception e) {
+			    messageResult.addError("api.response.code.error", provinceSheet);
+			} 
+		 }
+	}
 	
 	@Transaction
 	public MessageResult update(ProvinceSheet provinceSheet) {
 		 MessageResult messageResult = new MessageResult();
-		 MessageResult Mr = null;
-		 if(provinceSheet.getProvinceName()!=""&& provinceSheet.getId()!="") {
-			 try{
-					SessionContext.getTableSession().update(provinceSheet);
-					messageResult.addData("api.response.code.success", provinceSheet);
-				}catch(Exception e) {
-					e.printStackTrace();
-				    messageResult.addError("api.response.code.error", provinceSheet);
-				} 
-		 }else{
-			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
-		 }
-		 Mr = informationService.getMessageResult(messageResult, null);
-		 return Mr;
+		 updatePro(provinceSheet,messageResult);
+		 return informationService.getMessageResult(messageResult, null);
 	}
+	
+	
 	@Transaction
 	public MessageResult delete(String ids,String deleteChildNode) {
 		Object obj = null;
@@ -284,8 +287,13 @@ public class ProvinceService {
 	}
 	
 	@Transaction
-	public MessageResult queryBtn(String clumes,List<Object> paramList) {
-		Object obj  = SessionContext.getTableSession().query(ProvinceSheet.class,"select "+Columns.getNames(ProvinceSheet.class)+" from PROVINCE_SHEET WHERE 1=1"+clumes,paramList);
+	public MessageResult queryBtn(String clumes,List<Object> paramList,String tableName){
+		Object obj = null;
+		if(tableName.equals("Province_Sheet".toUpperCase())) {
+			obj  = SessionContext.getTableSession().query(ProvinceSheet.class,"select "+Columns.getNames(ProvinceSheet.class)+" from "+tableName+" WHERE 1=1"+clumes,paramList);
+		}else if(tableName.equals("City_Sheet".toUpperCase())){
+			obj  = SessionContext.getTableSession().query(CitySheet.class,"select "+Columns.getNames(CitySheet.class)+" from "+tableName+" WHERE 1=1"+clumes,paramList);
+		}
 		MessageResult mr = new MessageResult();
 		mr.setStatus("200");
 		mr.setData(obj);
@@ -315,5 +323,60 @@ public class ProvinceService {
 		mr.setStatus("200");
 		mr.setData(object);	
 		return mr;
+	}
+
+	@SuppressWarnings("unchecked")
+	@Transaction
+	public MessageResult updateMany(List<Map<String, Object>> list) {
+		MessageResult messageResult = new MessageResult();
+		MessageResult mr = new MessageResult();
+		ProvinceSheet provinceSheet = null;
+		ProvinceSheet ps = null;
+		CitySheet citySheet = null;
+		List<LinkedHashMap<String ,Object>> linkedmap = null;
+		Map mm = null;
+		Object obj = null;
+		for(Map map:list){
+			//将map转为class对象
+			provinceSheet = ConverterUtil.mapToClass(map, ProvinceSheet.class);
+			//做验证
+			updatePro(provinceSheet,messageResult);
+			   if(map.get("child")!=null){
+					obj = map.get("child");
+					if(obj instanceof java.util.LinkedHashMap) {
+					   mm = (Map)obj;
+					   mm.put("pId",provinceSheet.getId());
+					   citySheet = ConverterUtil.mapToClass(mm, CitySheet.class);
+					   updateCity(citySheet,messageResult);
+					}else {
+						linkedmap = (List<LinkedHashMap<String ,Object>>)obj;
+						for(LinkedHashMap linked:linkedmap) {
+							citySheet = ConverterUtil.mapToClass((Map)linked, CitySheet.class);
+							updateCity(citySheet,messageResult);
+						}
+					}
+				}
+			}
+		if(StringUtil.notEmpty(pdError(messageResult))||StringUtil.notEmpty(pdValidation(messageResult))) {
+			addmr(messageResult,mr,list);
+		}
+		if(StringUtil.isEmpty(pdError(messageResult))&&StringUtil.isEmpty(pdValidation(messageResult))) {
+			mr.addData("api.response.code.success", list);
+		}
+		return informationService.getMessageResult(mr,null);
+	}
+	
+	public void updateCity(CitySheet citySheet,MessageResult messageResult){
+		 if(citySheet.getCityName()=="") {
+			 messageResult.addValidation("api.response.code.notNull", citySheet);
+		 }else{
+			try {
+				SessionContext.getTableSession().update(citySheet);
+				messageResult.addData("api.response.code.success", citySheet);
+			}catch(Exception e) {
+				e.printStackTrace();
+			    messageResult.addError("api.response.code.error", citySheet);
+			} 
+		 }
 	}
 }
