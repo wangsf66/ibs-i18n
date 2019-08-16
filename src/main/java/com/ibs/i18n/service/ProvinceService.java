@@ -1,7 +1,6 @@
 package com.ibs.i18n.service;
 
 
-import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
@@ -15,12 +14,11 @@ import com.douglei.orm.core.sql.pagequery.PageResult;
 import com.douglei.tools.utils.IdentityUtil;
 import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.datatype.converter.ConverterUtil;
+import com.douglei.tools.utils.naming.column.Columns;
 import com.ibs.i18n.entity.CitySheet;
-import com.ibs.i18n.entity.InformationSheet;
 import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.ApiResultI18n;
 import com.ibs.i18n.i18n.MessageResult;
-import com.ibs.parent.code.entity.column.Columns;
 
 @TransactionComponent
 public class ProvinceService {
@@ -42,29 +40,22 @@ public class ProvinceService {
 		return informationService.getMessageResult(messageResult, null);
 		}
 
-	  public void insertPro(ProvinceSheet provinceSheet,MessageResult messageResult) {
+	 
+	 public void insertPro(ProvinceSheet provinceSheet,MessageResult messageResult) {
 		  if(provinceSheet.getProvinceName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
 		  }else{
-			try {
-				SessionContext.getTableSession().save(provinceSheet);
-				messageResult.addData("api.response.code.success", provinceSheet);
-			}catch(Exception e) {
-			    messageResult.addError("api.response.code.error", provinceSheet);
-			} 
-		 }
-	}
+			 SessionContext.getTableSession().save(provinceSheet);
+			 messageResult.addData("api.response.code.success", provinceSheet);
+		  }
+	  }
 	  
 	  public void updatePro(ProvinceSheet provinceSheet,MessageResult messageResult) {
 		  if(provinceSheet.getProvinceName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
 		  }else{
-			try {
-				SessionContext.getTableSession().update(provinceSheet);
-				messageResult.addData("api.response.code.success", provinceSheet);
-			}catch(Exception e) {
-			    messageResult.addError("api.response.code.error", provinceSheet);
-			} 
+			  SessionContext.getTableSession().update(provinceSheet);
+			  messageResult.addData("api.response.code.success", provinceSheet);	
 		 }
 	}
 	
@@ -277,12 +268,8 @@ public class ProvinceService {
 		 if(citySheet.getCityName()==""||citySheet.getpId()=="") {
 			 messageResult.addValidation("api.response.code.notNull", citySheet);
 		 }else{
-			try {
-				SessionContext.getTableSession().save(citySheet);
-				messageResult.addData("api.response.code.success", citySheet);
-			}catch(Exception e) {
-			    messageResult.addError("api.response.code.error", citySheet);
-			} 
+			SessionContext.getTableSession().save(citySheet);
+			messageResult.addData("api.response.code.success", citySheet);
 		 }
 	}
 	
@@ -370,13 +357,8 @@ public class ProvinceService {
 		 if(citySheet.getCityName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", citySheet);
 		 }else{
-			try {
-				SessionContext.getTableSession().update(citySheet);
-				messageResult.addData("api.response.code.success", citySheet);
-			}catch(Exception e) {
-				e.printStackTrace();
-			    messageResult.addError("api.response.code.error", citySheet);
-			} 
+			 SessionContext.getTableSession().update(citySheet);
+			 messageResult.addData("api.response.code.success", citySheet);
 		 }
 	}
 }

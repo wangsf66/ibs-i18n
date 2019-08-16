@@ -11,29 +11,13 @@
 		<property name="enableTableDynamicUpdate" value="true" /><!-- 是否开启表的动态更新, 默认值为false  -->
 		<property name="serializationFileRootPath" value="C:\" /><!-- 序列化文件的根路径, 配置的路径从磁盘根路径起, 如果Table的CreateMode想配置dynamic_update, 该配置为必须配置项 -->
 		<property name="enableColumnDynamicUpdateValidation" value="true" /><!-- 是否开启列的动态更新验证[列的动态更新验证含义为, 修改列的数据类型,长度,精度,是否可为空时, 判断是否可以进行修改, 如果不能修改, 则抛出相应的异常信息], 默认值为false  -->
-	
-		<datasource class="com.alibaba.druid.pool.DruidDataSource" closeMethod="">
-			<property name="driverClassName" value="${jdbc.driver.class}"/>
-			<property name="url" value="${jdbc.url}"/>
-			<property name="username" value="${jdbc.username}"/>
-			<property name="password" value="${jdbc.password}"/>
-		
-			<property name="maxActive" value="500" /> 
-			<property name="minIdle" value="2" /> 
-			<property name="maxWait" value="5000" /> 
-			<property name="timeBetweenEvictionRunsMillis" value="60000" /> 
-			<property name="poolPreparedStatements" value="true" /> 
-			<property name="maxPoolPreparedStatementPerConnectionSize" value="100" />
-		</datasource>
+
 		
 		<mappings searchAll="true">
-			<mapping path="mapper/sql/sql.smp.xml" />
-			<mapping path="mapper/table" />
+			<mapping path="mapper" />
 			<mapping path="mappings" />
 		</mappings>
 	</environment>
 	
-	<properties placeholderPrefix="${" placeholderSuffix="}">
-		<resource path="jdbc.properties" />
-	</properties>
+	
 </configuration>

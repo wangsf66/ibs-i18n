@@ -1,6 +1,6 @@
 package com.ibs.i18n.entity;
 
-import com.ibs.parent.code.entity.column.Column;
+import com.douglei.tools.utils.naming.column.Column;
 
 public class InformationSheet {
 	@Column

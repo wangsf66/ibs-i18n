@@ -2,7 +2,7 @@ package com.ibs.i18n.entity;
 
 import java.util.Date;
 
-import com.ibs.parent.code.entity.column.Column;
+import com.douglei.tools.utils.naming.column.Column;
 
 public class CitySheet {
 	@Column("ID")

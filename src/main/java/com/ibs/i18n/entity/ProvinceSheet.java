@@ -3,7 +3,7 @@ package com.ibs.i18n.entity;
 import java.util.Date;
 import java.util.List;
 
-import com.ibs.parent.code.entity.column.Column;
+import com.douglei.tools.utils.naming.column.Column;
 
 public class ProvinceSheet {
 	@Column("ID")

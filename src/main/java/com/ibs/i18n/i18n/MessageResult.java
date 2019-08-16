@@ -3,7 +3,7 @@ package com.ibs.i18n.i18n;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.ibs.parent.code.entity.column.Column;
+import com.douglei.tools.utils.naming.column.Column;
 
 public class MessageResult{
 	
