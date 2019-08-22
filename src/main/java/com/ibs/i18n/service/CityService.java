@@ -6,9 +6,12 @@ import java.util.List;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.douglei.orm.context.SessionContext;
+import com.douglei.orm.context.SimpleSessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.context.transaction.component.TransactionComponent;
 import com.douglei.orm.core.sql.pagequery.PageResult;
+import com.douglei.orm.core.validate.ValidateException;
+import com.douglei.orm.sessions.Session;
 import com.douglei.tools.utils.naming.column.Columns;
 import com.ibs.i18n.entity.CitySheet;
 import com.ibs.i18n.i18n.MessageResult;
@@ -19,7 +22,6 @@ public class CityService {
 	private InformationService informationService;
 	
 	
-	@Transaction
 	 public MessageResult insert(CitySheet citySheet) {
 		 MessageResult messageResult = new MessageResult();
 		 insertCity(citySheet,messageResult);
@@ -30,8 +32,20 @@ public class CityService {
 			 if(citySheet.getCityName()==""||citySheet.getpId()=="") {
 				 messageResult.addValidation("api.response.code.notNull", citySheet);
 			 }else{
-				 SessionContext.getTableSession().save(citySheet);
-				 messageResult.addData("api.response.code.success", citySheet);	
+				 Session session =  SimpleSessionContext.getSession();
+				 try {
+					session.getTableSession().save(citySheet);
+					session.commit();
+					messageResult.addData("api.response.code.success", citySheet);
+				}catch (ValidateException e) {
+					session.rollback();
+					messageResult.addValidation("api.response.code.overLength", citySheet);
+				}catch (Exception e) {
+					session.rollback();
+					messageResult.addError("api.response.code.error", citySheet);
+				}finally {
+					session.close();
+			    }  	
 			 }
 		}
 		
@@ -40,24 +54,44 @@ public class CityService {
 			 if(citySheet.getCityName()=="") {
 				 messageResult.addValidation("api.response.code.notNull", citySheet);
 			 }else{
-				 SessionContext.getTableSession().update(citySheet);
-				 messageResult.addData("api.response.code.success", citySheet);	
+				 Session session =  SimpleSessionContext.getSession();
+				 try {
+					session.getTableSession().update(citySheet);
+					session.commit();
+					messageResult.addData("api.response.code.success", citySheet);
+				}catch (ValidateException e) {
+					session.rollback();
+					messageResult.addValidation("api.response.code.overLength", citySheet);
+				} catch (Exception e) {
+					e.printStackTrace();
+					session.rollback();
+					messageResult.addError("api.response.code.error", citySheet);
+				}finally {
+					session.close();
+			    }  	
 			 }
 		}
 	
 	
-	@Transaction
 	public MessageResult update(CitySheet citySheet) {
 		 MessageResult messageResult = new MessageResult();
 		 updateCity(citySheet,messageResult);
 		 return informationService.getMessageResult(messageResult, null);
 	}
 	
-	@Transaction
 	public MessageResult delete(String ids) {
 		MessageResult messageResult = new MessageResult();
-		SessionContext.getSqlSession().executeUpdate("delete from CITY_SHEET where ID in ("+ids+")");
-		messageResult.addData("api.response.code.success", ids);
+		Session session =  SimpleSessionContext.getSession();
+		 try {
+			session.getSqlSession().executeUpdate("delete from CITY_SHEET where ID in ("+ids+")");
+			session.commit();
+			messageResult.addData("api.response.code.success", ids);
+		} catch (Exception e) {
+			session.rollback();
+			messageResult.addError("api.response.code.error", ids);
+		}finally {
+			session.close();
+	   } 
 		return informationService.getMessageResult(messageResult, null);
 	}
 	
@@ -95,7 +129,6 @@ public class CityService {
 		return mr;
 	}
 	
-	@Transaction
 	public MessageResult insertMany(List<CitySheet> list) {
 		MessageResult messageResult = new MessageResult();
 		for(CitySheet city:list) {
@@ -104,7 +137,6 @@ public class CityService {
 		 return informationService.getMessageResult(messageResult, null);
 	}
 	
-	@Transaction
 	public MessageResult updateMany(List<CitySheet> list) {
 		MessageResult messageResult = new MessageResult();
 		for(CitySheet city:list) {

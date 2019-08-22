@@ -3,11 +3,14 @@
 	 <table name="PROVINCE_SHEET" class="com.ibs.i18n.entity.ProvinceSheet" createMode="create">
 		<columns>
 			<column name="id" property="id" dataType="string" primaryKey="true" length="32" />
-			<column name="provinceName" descriptionName="名称" property="provinceName" dataType="string" length="50"/>
+			<column name="provinceName" descriptionName="名称" property="provinceName" dataType="string" length="50" validate="true"/>
 		    <column name="areaCode" descriptionName="区号" property="areaCode" dataType="integer" length="4"/>
 			<column name="directlyUnder" descriptionName="是否直辖" property="directlyUnder" dataType="integer" length="1"/>
 			<column name="createDate" descriptionName="创建日期" property="createDate" dataType="date" length="50"/>
 			<column name="populationSize" descriptionName="人口数量（千万）" property="populationSize" dataType="float" length="50"/>
+		    <column name="remark" descriptionName="备注" property="remark" dataType="String" length="500"/>
 		</columns>
+		
+		<primaryKeyHandler type="uuid32" coverValue="false"></primaryKeyHandler>
 	</table>
 </mapping-configuration>  

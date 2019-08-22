@@ -18,7 +18,15 @@ public class ProvinceSheet {
     private Date createDate;
 	@Column("POPULATIONSIZE")
 	private float populationSize;
+	@Column
+	private String remark;
 	
+	public String getRemark() {
+		return remark;
+	}
+	public void setRemark(String remark) {
+		this.remark = remark;
+	}
 	private List<CitySheet> list;
 	
 	public List<CitySheet> getList() {

@@ -16,8 +16,16 @@ spring:
     url: jdbc:sqlserver://localhost:1433;DatabaseName=douglei
     username: sa
     password: 123123
+#    url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=douglei
+#    username: sa
+#    password: 123_abc
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
 i18n:
   enable-redis-store: true
+ibs:
+  parent:
+    filter:
+      enable-token-validate-filter: false
+      enable-log-filter: false
 

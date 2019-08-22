@@ -2,14 +2,14 @@
 <mapping-configuration>
 	 <table name="CITY_SHEET" class="com.ibs.i18n.entity.CitySheet" createMode="create">
 		<columns>
-			<column name="id" property="id" dataType="integer" primaryKey="true" length="32" />
-			<column name="cityName" descriptionName="名称" property="cityName" dataType="string" length="50"/>
+			<column name="id" property="id" dataType="String" primaryKey="true" length="32" />
+			<column name="cityName" validate="true" descriptionName="名称" property="cityName" dataType="string" length="50"/>
 			<column name="pId" property="pId" descriptionName="父级Id" dataType="string" length="32" />
 			<column name="zipCode" descriptionName="邮编" property="zipCode" dataType="integer" length="6"/>
 			<column name="directlyUnder" descriptionName="是否直辖" property="directlyUnder" dataType="integer" length="1"/>
 			<column name="createDate" descriptionName="创建日期" property="createDate" dataType="date" length="50"/>
 			<column name="populationSize" descriptionName="人口数量（千万）" property="populationSize" dataType="float" length="50"/>
 		</columns>
-		<primaryKeyHandler type="sequence"></primaryKeyHandler>
+		<primaryKeyHandler type="uuid32" coverValue="false"></primaryKeyHandler>
 	</table>
 </mapping-configuration>  

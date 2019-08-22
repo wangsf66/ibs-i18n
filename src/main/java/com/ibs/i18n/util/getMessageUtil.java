@@ -7,7 +7,7 @@ public class getMessageUtil {
 	
      public static String getMessage(String code) {
 	     ApiResultI18n apiResultI18n = ApiResultI18n.failure(code,getLocalLanguage());
-	     return apiResultI18n.getMsg();  
+	     return apiResultI18n.getMessage();  
 	}
     
     public static String getLocalLanguage(){
@@ -19,6 +19,6 @@ public class getMessageUtil {
     
     public static String getMessageA(String code,String language){
 	     ApiResultI18n apiResultI18n = ApiResultI18n.failure(code,language);
-	     return apiResultI18n.getMsg();  
+	     return apiResultI18n.getMessage();  
 	}
 }

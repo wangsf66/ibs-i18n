@@ -1,7 +1,6 @@
 package com.ibs.i18n.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -16,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.ProvinceService;
-import com.ibs.i18n.util.pdUtil;
 
 @RestController
 @RequestMapping("/province")
@@ -60,8 +58,7 @@ public class ProvinceController {
 	//多条件查询
 	@RequestMapping("/queryCondition/{tableName}")
 	public MessageResult queryCondition(HttpServletRequest request,@PathVariable(name = "tableName") String tableName){
-		List<Object> paramList = new ArrayList();
-		return provinceService.queryBtn(pdUtil.czSql(request,paramList),paramList,tableName);
+		return provinceService.dynamicQuery(request,tableName);
 	}
 	
 	

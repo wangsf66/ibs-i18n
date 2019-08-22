@@ -40,7 +40,7 @@ public class CityController {
 	
 	@RequestMapping("/updateMany")
 	public MessageResult updateMany(@RequestBody List<CitySheet> list){
-		return 	cityService.insertMany(list);
+		return 	cityService.updateMany(list);
 	}
 	
 	@RequestMapping("/update")
@@ -66,10 +66,10 @@ public class CityController {
 	}
 	
 	//多条件查询
-	@RequestMapping("/queryCondition")
-	public MessageResult queryCondition(HttpServletRequest request){
-		List<Object> paramList = new ArrayList();
-		return cityService.queryBtn(pdUtil.czSql(request,paramList),paramList);
-	}	
+//	@RequestMapping("/queryCondition")
+//	public MessageResult queryCondition(HttpServletRequest request){
+//		List<Object> paramList = new ArrayList();
+//		return cityService.queryBtn(pdUtil.czSql(request,paramList),paramList);
+//	}	
 		
 }

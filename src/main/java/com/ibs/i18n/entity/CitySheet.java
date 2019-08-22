@@ -6,7 +6,7 @@ import com.douglei.tools.utils.naming.column.Column;
 
 public class CitySheet {
 	@Column("ID")
-	private int id;
+	private String id;
 	@Column("CITYNAME")
 	private String cityName;
 	@Column("PID")
@@ -46,10 +46,10 @@ public class CitySheet {
 		this.populationSize = populationSize;
 	}
 	
-	public int getId() {
+	public String getId() {
 		return id;
 	}
-	public void setId(int id) {
+	public void setId(String id) {
 		this.id = id;
 	}
 	public String getCityName() {
@@ -64,7 +64,7 @@ public class CitySheet {
 	public void setpId(String pId) {
 		this.pId = pId;
 	}
-	public CitySheet(int id, String pId, String cityName) {
+	public CitySheet(String id, String pId, String cityName) {
 		super();
 		this.id = id;
 		this.cityName = cityName;
@@ -74,7 +74,7 @@ public class CitySheet {
 		super();
 	}
 	
-	public CitySheet(int id, String cityName, String pId, int zipCode, int directlyUnder, Date createDate,
+	public CitySheet(String id, String cityName, String pId, int zipCode, int directlyUnder, Date createDate,
 			float populationSize) {
 		super();
 		this.id = id;

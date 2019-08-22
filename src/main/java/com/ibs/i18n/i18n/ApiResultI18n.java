@@ -26,7 +26,7 @@ public class ApiResultI18n{
 		this.code = code;
 	}
 
-	public String getMsg() {
+	public String getMessage() {
 		return msg;
 	}
 

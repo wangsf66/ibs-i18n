@@ -1,12 +1,11 @@
 package com.ibs.i18n.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.util.ArrayList;
 import java.util.List;
-
+import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
-
+import com.ibs.i18n.entity.ResponseBody;
+import com.ibs.i18n.util.InParam.MethodContext;
+import com.ibs.i18n.util.InParam.OrderByMethod;
 import com.ibs.i18n.util.impl.BtnMethod;
 import com.ibs.i18n.util.impl.EqMethod;
 import com.ibs.i18n.util.impl.GeMethod;
@@ -48,56 +47,49 @@ public class pdUtil{
 		}
 	}
 	
-	//解析URL
-	public static String czSql(HttpServletRequest request,List<Object> paramList) {
-		String urlParameter=request.getQueryString();//网址中的参数
-		StringBuilder param = null;
-		if(urlParameter!=null&&!"".equals(urlParameter)){
-            try {
-            	param = new StringBuilder();
-            	param.append(URLDecoder.decode(urlParameter,"UTF-8"));
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        }
-		if(param!=null) {
-			//在正式操作中，这个数组是除以“_”开头的内置参数外的资源数组，在request中进行处理，这块只负读取
-			//？号后面的参数组，以&号分割
-			String parameterSet[] = param.toString().split("&");
-			return executeSql(parameterSet,paramList);
-		}else {
-			return "";
+	public static String czSql(Map<String, String> requestResourceParams, List<Object> paramlist) {
+		String sql = "";
+		if(requestResourceParams.size()!= 0) {
+			sql +=  executeObjectSql(requestResourceParams,paramlist);
 		}
+		return sql;
 	}
 	
-	//拼接sql
-	public static String executeSql(String parameterSet[],List<Object> paramList){
+   
+	//解析URL
+	public static String czSql(HttpServletRequest request,List<Object> paramList,String tableName) {
+		String sql = "";
+		ResponseBody res = (ResponseBody)request.getAttribute("ResponseBody");
+		if(res.getRequestResourceParams().size()!= 0) {
+			Map paramMap = res.getRequestResourceParams(); 
+			sql +=  executeObjectSql(paramMap,paramList);
+		}
+		return sql;
+	}
+	
+	//拼接对象条件sql
+	public static String executeObjectSql(Map<?, ?> paramMap,List<Object> paramList){
 		StringBuilder sql = new StringBuilder();
-		String params[] = {};
-		String column = null;
-	    String value = null;
-		for(String parameter:parameterSet) {
-			//将一对参数分割为列名和值 ，以"="分割
-		    params = parameter.split("="); 
-		    column = params[0];
-		    //trim()去掉字符串两端的空格
-		    value = params[1].trim();
-		    //如果参数中存在“（”，则参数是内置的方法 ，否则即为普通的值
-		    if(params[1].contains("(")) {
+	    paramMap.forEach((key, value) -> {
+	    	String param = value.toString().trim();
+	    	String column = key.toString().trim();
+            if(param.contains("(")) {
 		    	//获取方法中的参数
-				String para = value.substring(value.indexOf("(")+1,value.indexOf(")"));
+				String para = param.substring(param.indexOf("(")+1,param.indexOf(")"));
 				//参数为空
 				if(valueIsNullStr(para)) {
 					sql.append(" and "+ column +" is null"); 
 				}else{
-					sql.append(montageSql(value,column,para,sql,paramList)); 	
+					sql.append(montageSql(param,column,para,sql,paramList)); 	
 				}	
 			}else {
-				sql.append(" and "+ column +" = "+ params); 
+				sql.append(" and "+ column +" = "+ param); 
 			}
-		}
+        });
 		return sql.toString();
     }	
+	
+
 	//参数为一个时
 	//eq("")，ge("")，gt("")，le("")，lt("")，ne("")，in("")，like("")，btn("")
 	//参数为多个时
@@ -213,4 +205,8 @@ public class pdUtil{
 		}
 		return sqls;
 	}
+
+	
+
+	
 }

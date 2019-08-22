@@ -5,20 +5,28 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.servlet.http.HttpServletRequest;
+
 import org.springframework.beans.factory.annotation.Autowired;
 
 import com.douglei.orm.context.SessionContext;
+import com.douglei.orm.context.SimpleSessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.context.transaction.component.TransactionComponent;
 import com.douglei.orm.core.sql.pagequery.PageResult;
+import com.douglei.orm.core.validate.ValidateException;
+import com.douglei.orm.sessions.Session;
+import com.douglei.orm.sessions.session.table.TableSession;
 import com.douglei.tools.utils.IdentityUtil;
 import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.datatype.converter.ConverterUtil;
 import com.douglei.tools.utils.naming.column.Columns;
 import com.ibs.i18n.entity.CitySheet;
 import com.ibs.i18n.entity.ProvinceSheet;
+import com.ibs.i18n.entity.ResponseBody;
 import com.ibs.i18n.i18n.ApiResultI18n;
 import com.ibs.i18n.i18n.MessageResult;
+import com.ibs.i18n.util.InParam.MethodContext;
 
 @TransactionComponent
 public class ProvinceService {
@@ -32,21 +40,32 @@ public class ProvinceService {
 	@Autowired
 	private InformationService informationService;
 	
-	 @Transaction
 	  public MessageResult insert(ProvinceSheet provinceSheet) {
 		MessageResult messageResult = new MessageResult();
-		provinceSheet.setId(IdentityUtil.get32UUID());
 		insertPro(provinceSheet,messageResult);
 		return informationService.getMessageResult(messageResult, null);
 		}
 
 	 
+	 
 	 public void insertPro(ProvinceSheet provinceSheet,MessageResult messageResult) {
 		  if(provinceSheet.getProvinceName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
 		  }else{
-			 SessionContext.getTableSession().save(provinceSheet);
-			 messageResult.addData("api.response.code.success", provinceSheet);
+			 Session session =  SimpleSessionContext.getSession();
+			 try {
+				session.getTableSession().save(provinceSheet);
+				session.commit();
+				messageResult.addData("api.response.code.success", provinceSheet);
+			} catch (ValidateException e) {
+				session.rollback();
+				messageResult.addValidation("api.response.code.overLength", provinceSheet);
+			}catch (Exception e) {
+				session.rollback();
+				messageResult.addError("api.response.code.error", provinceSheet);
+			}finally {
+				session.close();
+			}
 		  }
 	  }
 	  
@@ -54,12 +73,23 @@ public class ProvinceService {
 		  if(provinceSheet.getProvinceName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
 		  }else{
-			  SessionContext.getTableSession().update(provinceSheet);
-			  messageResult.addData("api.response.code.success", provinceSheet);	
+			  Session session =  SimpleSessionContext.getSession();
+				 try {
+					session.getTableSession().update(provinceSheet);
+					session.commit();
+					messageResult.addData("api.response.code.success", provinceSheet);
+				}catch (ValidateException e) {
+					session.rollback();
+					messageResult.addValidation("api.response.code.overLength", provinceSheet);
+				} catch (Exception e) {
+					session.rollback();
+					messageResult.addError("api.response.code.error", provinceSheet);
+				}finally {
+					session.close();
+			 } 
 		 }
 	}
-	
-	@Transaction
+
 	public MessageResult update(ProvinceSheet provinceSheet) {
 		 MessageResult messageResult = new MessageResult();
 		 updatePro(provinceSheet,messageResult);
@@ -67,7 +97,6 @@ public class ProvinceService {
 	}
 	
 	
-	@Transaction
 	public MessageResult delete(String ids,String deleteChildNode) {
 		Object obj = null;
 	    Map<String, Object> map = null;
@@ -77,41 +106,50 @@ public class ProvinceService {
 		String id[] = ids.split(",");
 		for(String Id:id) {
 		if(deleteChildNode=="false"||deleteChildNode==null) {
-			try {
-				SessionContext.getSqlSession().executeUpdate("delete from PROVINCE_SHEET where ID = '"+Id+"'");
-				messageResult.addData("api.response.code.success", Id);
-			}catch(Exception e) {
-				e.printStackTrace();
-				messageResult.addError("api.response.code.error", Id);
-			} 	
+			deleteProvince(Id,messageResult);
 		}else {
 			    obj = cityService.query2(Id);
 			    if(obj!=null) {
 			    	list = (List<Map<String,Object>>)obj;
 			    	for(Object object : list) {
 			    		map = (Map<String, Object>) object;
-			    		SessionContext.getSqlSession().executeUpdate("delete from CITY_SHEET where ID = "+map.get("ID"));
-			    		try {
-							SessionContext.getSqlSession().executeUpdate("delete from PROVINCE_SHEET where ID = '"+Id+"'");
-							messageResult.addData("api.response.code.success", Id);
-						}catch(Exception e) {
-							e.printStackTrace();
-							messageResult.addError("api.response.code.error", Id);
-						} 
+			    		deleteCity(map.get("ID").toString(),messageResult);
 			    	}
 			    }else {
-					try {
-						SessionContext.getSqlSession().executeUpdate("delete from PROVINCE_SHEET where ID = '"+Id+"'");
-						messageResult.addData("api.response.code.success", Id);
-					}catch(Exception e) {
-						e.printStackTrace();
-						messageResult.addError("api.response.code.error", Id);
-					} 	
+			    	deleteProvince(Id,messageResult);
 				}
 			}
 		}
 		Mr = informationService.getMessageResult(messageResult, null);
 		return Mr;
+	}
+	
+	public void deleteProvince(String Id,MessageResult messageResult) {
+		Session session =  SimpleSessionContext.getSession();
+		 try {
+			session.getSqlSession().executeUpdate("delete from PROVINCE_SHEET where ID = '"+Id+"'");
+			session.commit();
+			messageResult.addData("api.response.code.success", Id);
+		} catch (Exception e) {
+			session.rollback();
+			messageResult.addError("api.response.code.error", Id);
+		}finally {
+			session.close();
+	   } 
+	}
+	
+	public void deleteCity(String Id,MessageResult messageResult) {
+		Session session =  SimpleSessionContext.getSession();
+		 try {
+			session.getSqlSession().executeUpdate("delete from CITY_SHEET where ID = '"+Id+"'");
+			session.commit();
+			messageResult.addData("api.response.code.success", Id);
+		} catch (Exception e) {
+			session.rollback();
+			messageResult.addError("api.response.code.error", Id);
+		}finally {
+			session.close();
+	   } 
 	}
 	
 	@Transaction
@@ -168,7 +206,6 @@ public class ProvinceService {
 	}
 	
 	@SuppressWarnings("unchecked")
-	@Transaction
 	public MessageResult insertMany(List<Map<String,Object>> list) {
 		MessageResult messageResult = new MessageResult();
 		MessageResult mr = new MessageResult();
@@ -268,9 +305,18 @@ public class ProvinceService {
 		 if(citySheet.getCityName()==""||citySheet.getpId()=="") {
 			 messageResult.addValidation("api.response.code.notNull", citySheet);
 		 }else{
-			SessionContext.getTableSession().save(citySheet);
-			messageResult.addData("api.response.code.success", citySheet);
-		 }
+			 Session session =  SimpleSessionContext.getSession();
+			 try {
+				session.getTableSession().save(citySheet);
+				session.commit();
+				messageResult.addData("api.response.code.success", citySheet);
+			} catch (Exception e) {
+				session.rollback();
+				messageResult.addError("api.response.code.error", citySheet);
+			}finally {
+				session.close();
+		 }  
+	  }
 	}
 	
 	@Transaction
@@ -313,7 +359,6 @@ public class ProvinceService {
 	}
 
 	@SuppressWarnings("unchecked")
-	@Transaction
 	public MessageResult updateMany(List<Map<String, Object>> list) {
 		MessageResult messageResult = new MessageResult();
 		MessageResult mr = new MessageResult();
@@ -357,8 +402,31 @@ public class ProvinceService {
 		 if(citySheet.getCityName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", citySheet);
 		 }else{
-			 SessionContext.getTableSession().update(citySheet);
-			 messageResult.addData("api.response.code.success", citySheet);
-		 }
+			 Session session =  SimpleSessionContext.getSession();
+			 try {
+				session.getTableSession().update(citySheet);
+				session.commit();
+				messageResult.addData("api.response.code.success", citySheet);
+			} catch (Exception e) {
+				session.rollback();
+				messageResult.addError("api.response.code.error", citySheet);
+			}finally {
+				session.close();
+		   } 
+		}
+	}
+    
+	@Transaction
+	public MessageResult dynamicQuery(HttpServletRequest request, String tableName) {
+		MessageResult messageResult = new MessageResult();
+		ResponseBody res = (ResponseBody)request.getAttribute("ResponseBody");
+		try {
+			MethodContext methodContext = new MethodContext(res.getRequestBuiltinParams(),res.getRequestResourceParams(),res.getRequestParentResourceParams(),tableName);
+			messageResult.setData(methodContext.getDatas());
+		} catch (Exception e) {
+			e.printStackTrace();
+			messageResult.setError(e.toString());
+		}
+		return messageResult;
 	}
 }
