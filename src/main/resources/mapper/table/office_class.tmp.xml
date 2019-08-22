@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<mapping-configuration>
+	 <table name="OFFICE_SHEET" class="com.ibs.i18n.entity.OfficeSheet" createMode="create">
+		<columns>
+			<column name="id" property="id" dataType="string" primaryKey="true" length="32" />
+			<column name="officeName" validate="true" descriptionName="名称" property="officeName" dataType="string" length="50"/>
+			<column name="pId" property="pId" descriptionName="父级Id" dataType="string" length="32" />
+		</columns>
+	</table>
+</mapping-configuration>  
