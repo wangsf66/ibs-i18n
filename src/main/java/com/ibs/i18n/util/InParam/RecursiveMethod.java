@@ -79,6 +79,7 @@ public  class RecursiveMethod{
 		}
 	}
 	
+	//递归方法
 	private void recursiveQuery(List<Map<String, Object>> list,List<Object> paramlist) {
 		if(list.size()==0||this.deep==0) {
 			return;
@@ -92,28 +93,16 @@ public  class RecursiveMethod{
 	    }
 	}
 	
+	//为父节点添加子节点
 	public void addchild(List<Map<String, Object>> childlist,List<Map<String, Object>> list) {
-		List<Object> listObject = null;
-		Object obj = null;
+		List <Object> listObject= null;
 		for(int j=0;j<list.size();j++) {
+			listObject = new ArrayList<>();
     		for(int i=0;i<childlist.size();i++) {
     			if(list.get(j).get("ID").equals(childlist.get(i).get(pcName))) {
-    				if(obj==null) {
-    					obj = childlist.get(i);
-    					list.get(j).put("children",obj);
-    				}else {
-    					Map map = (Map)obj;
-    					if(childlist.get(i).get(pcName).equals(map.get(pcName))) {
-    						listObject = new ArrayList();
-    						listObject.add(obj);
-    						listObject.add(childlist.get(i));
-    						list.get(j).put("children",listObject);
-    					}else {
-    						obj = childlist.get(i);
-    						list.get(j).put("children",obj);
-    					}
-    				}
+    				listObject.add(childlist.get(i));
     			}
+    			list.get(j).put("children", listObject);
     		}
     	}
 	}
@@ -124,7 +113,7 @@ public  class RecursiveMethod{
 		}
 		return getFirstSql(paramlist);
 	}
-
+    //递归除第一次后面的语句
 	private String getNextSql(List<Map<String, Object>> list,List<Object> paramlist){
 		if(orderByMethod==null) {
 		    return "Select * from "+tablename+" where 1=1 "+pdUtil.czSql(requestResourceParams, paramlist)+" and "+pcName+" in("+getParam(list,paramlist)+") ";
@@ -133,7 +122,8 @@ public  class RecursiveMethod{
 		}
 		
 	}
-
+    
+	//递归首次执行
 	private String getFirstSql(List<Object> paramlist) {
 		String sql = "";
 		if(Id==null) {
@@ -144,7 +134,7 @@ public  class RecursiveMethod{
 		executeFirst = true;
 		return sql;
 	}
-	
+	//拼接？号
 	public String getParam(List<Map<String, Object>> list,List<Object> paramlist) {
 		String sql = "";
 		for(int i=0;i<list.size();i++) {
@@ -156,5 +146,5 @@ public  class RecursiveMethod{
 			paramlist.add(list.get(i).get("ID"));
 		}	
 		return  sql;
-	}
+	}	
 }

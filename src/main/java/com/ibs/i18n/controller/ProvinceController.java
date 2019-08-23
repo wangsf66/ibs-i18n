@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.ProvinceService;
+import com.ibs.response.ResponseContext;
 
 @RestController
 @RequestMapping("/province")
@@ -30,7 +31,8 @@ public class ProvinceController {
 	
 	@RequestMapping("/insertMany")
 	public MessageResult insertMany(@RequestBody List<Map<String,Object>> list){
-		return 	provinceService.insertMany(list);
+		return	provinceService.insertMany(list);
+	 	
 	}
 	
 	@RequestMapping("/updateMany")

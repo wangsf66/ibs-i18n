@@ -12,9 +12,11 @@ import com.douglei.orm.context.transaction.component.TransactionComponent;
 import com.douglei.orm.core.sql.pagequery.PageResult;
 import com.douglei.orm.core.validate.ValidateException;
 import com.douglei.orm.sessions.Session;
+import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.naming.column.Columns;
 import com.ibs.i18n.entity.CitySheet;
 import com.ibs.i18n.i18n.MessageResult;
+import com.ibs.response.ResponseContext;
 @TransactionComponent
 public class CityService {
 	
@@ -22,62 +24,63 @@ public class CityService {
 	private InformationService informationService;
 	
 	
-	 public MessageResult insert(CitySheet citySheet) {
-		 MessageResult messageResult = new MessageResult();
-		 insertCity(citySheet,messageResult);
-		 return informationService.getMessageResult(messageResult, null);
+	 public void insert(CitySheet citySheet) {
+		   insertCity(citySheet);
 		}
+	 
+	 public void update(CitySheet citySheet) {
+		 updateCity(citySheet);
+	}
 	
-		public void insertCity(CitySheet citySheet,MessageResult messageResult){
-			 if(citySheet.getCityName()==""||citySheet.getpId()=="") {
-				 messageResult.addValidation("api.response.code.notNull", citySheet);
+		public void insertCity(CitySheet citySheet){
+			 if("".equals(citySheet.getCityName())||citySheet.getCityName()==null) {
+				 ResponseContext.addValidation(citySheet, "cityName", "api.response.code.notNull");
+			 }else if("".equals(citySheet.getpId())||citySheet.getpId()==null) {
+				 ResponseContext.addValidation(citySheet, "pId", "api.response.code.notNull");
+			 }else if(StringUtil.computeStringLength(citySheet.getCityName())>50) {
+				 ResponseContext.addValidation(citySheet, "cityName", "api.response.code.overLength");
 			 }else{
 				 Session session =  SimpleSessionContext.getSession();
 				 try {
 					session.getTableSession().save(citySheet);
 					session.commit();
-					messageResult.addData("api.response.code.success", citySheet);
-				}catch (ValidateException e) {
-					session.rollback();
-					messageResult.addValidation("api.response.code.overLength", citySheet);
+					ResponseContext.addData(citySheet);
 				}catch (Exception e) {
 					session.rollback();
-					messageResult.addError("api.response.code.error", citySheet);
+					ResponseContext.addError(citySheet, "api.response.code.error");
 				}finally {
 					session.close();
 			    }  	
 			 }
 		}
 		
+		
 	
-	  public void updateCity(CitySheet citySheet,MessageResult messageResult){
-			 if(citySheet.getCityName()=="") {
-				 messageResult.addValidation("api.response.code.notNull", citySheet);
+	  public void updateCity(CitySheet citySheet){
+		   if("".equals(citySheet.getCityName())||citySheet.getCityName()==null) {
+				 ResponseContext.addValidation(citySheet, "cityName", "api.response.code.notNull");
+			 }else if("".equals(citySheet.getpId())||citySheet.getpId()==null) {
+				 ResponseContext.addValidation(citySheet, "pId", "api.response.code.notNull");
+			 }else if(StringUtil.computeStringLength(citySheet.getCityName())>50) {
+				 ResponseContext.addValidation(citySheet, "cityName", "api.response.code.overLength");
 			 }else{
 				 Session session =  SimpleSessionContext.getSession();
 				 try {
 					session.getTableSession().update(citySheet);
 					session.commit();
-					messageResult.addData("api.response.code.success", citySheet);
-				}catch (ValidateException e) {
+					ResponseContext.addData(citySheet);
+				}catch (Exception e) {
 					session.rollback();
-					messageResult.addValidation("api.response.code.overLength", citySheet);
-				} catch (Exception e) {
-					e.printStackTrace();
-					session.rollback();
-					messageResult.addError("api.response.code.error", citySheet);
+					ResponseContext.addError(citySheet, "api.response.code.error");
 				}finally {
 					session.close();
 			    }  	
+				 
 			 }
 		}
 	
 	
-	public MessageResult update(CitySheet citySheet) {
-		 MessageResult messageResult = new MessageResult();
-		 updateCity(citySheet,messageResult);
-		 return informationService.getMessageResult(messageResult, null);
-	}
+	
 	
 	public MessageResult delete(String ids) {
 		MessageResult messageResult = new MessageResult();
@@ -129,20 +132,16 @@ public class CityService {
 		return mr;
 	}
 	
-	public MessageResult insertMany(List<CitySheet> list) {
-		MessageResult messageResult = new MessageResult();
+	public void insertMany(List<CitySheet> list) {
 		for(CitySheet city:list) {
-			insertCity(city,messageResult);
+			insertCity(city);
 		 }
-		 return informationService.getMessageResult(messageResult, null);
 	}
 	
-	public MessageResult updateMany(List<CitySheet> list) {
-		MessageResult messageResult = new MessageResult();
+	public void updateMany(List<CitySheet> list) {
 		for(CitySheet city:list) {
-			updateCity(city,messageResult);
+			updateCity(city);
 		 }
-		 return informationService.getMessageResult(messageResult, null);
 	}
 	
 	@Transaction

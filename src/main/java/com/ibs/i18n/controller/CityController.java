@@ -19,6 +19,8 @@ import com.ibs.i18n.service.CityService;
 import com.ibs.i18n.service.InformationService;
 import com.ibs.i18n.service.ProvinceService;
 import com.ibs.i18n.util.pdUtil;
+import com.ibs.response.Response;
+import com.ibs.response.ResponseContext;
 
 @RestController
 @RequestMapping("/city")
@@ -29,23 +31,28 @@ public class CityController {
 	private CityService cityService;
 	
 	@RequestMapping("/insert")
-	public MessageResult insert(@RequestBody CitySheet citySheet ) {
-		return cityService.insert(citySheet);
+	public Response insert(@RequestBody CitySheet citySheet ) {
+		cityService.insert(citySheet);
+		return ResponseContext.getFinalResponse();
 	}
 	
 	@RequestMapping("/insertMany")
-	public MessageResult insertMany(@RequestBody List<CitySheet> list){
-		return 	cityService.insertMany(list);
+	public Response insertMany(@RequestBody List<CitySheet> list){
+		cityService.insertMany(list);
+		//判断是否为数组
+	 	return ResponseContext.getFinalResponse(true);
 	}
 	
 	@RequestMapping("/updateMany")
-	public MessageResult updateMany(@RequestBody List<CitySheet> list){
-		return 	cityService.updateMany(list);
+	public Response updateMany(@RequestBody List<CitySheet> list){
+		 cityService.updateMany(list);
+		 return ResponseContext.getFinalResponse(true);
 	}
 	
 	@RequestMapping("/update")
-	public MessageResult update(@RequestBody CitySheet citySheet ) {
-		return cityService.update(citySheet);
+	public Response update(@RequestBody CitySheet citySheet ) {
+		cityService.update(citySheet);
+		return ResponseContext.getFinalResponse();
 	}
 	@RequestMapping("/delete")
 	public MessageResult delete(HttpServletRequest request) {
