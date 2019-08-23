@@ -18,7 +18,6 @@ import com.ibs.i18n.entity.OfficeSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.CityService;
 import com.ibs.i18n.service.OfficeService;
-import com.ibs.i18n.util.pdUtil;
 
 @RestController
 @RequestMapping("/office")
@@ -50,12 +49,5 @@ public class OfficeController {
 		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
 		return officeService.Page(pageNum, pageSize);
 	}
-	
-	//多条件查询
-	@RequestMapping("/queryCondition/{tableName}")
-	public MessageResult queryCondition(HttpServletRequest request,@PathVariable(name = "tableName") String tableName){
-		List<Object> paramList = new ArrayList();
-		return officeService.queryBtn(pdUtil.czSql(request,paramList,tableName),paramList,tableName);
-	}
-		
+
 }

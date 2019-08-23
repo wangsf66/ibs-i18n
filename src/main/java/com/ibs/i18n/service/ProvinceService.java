@@ -21,12 +21,13 @@ import com.douglei.tools.utils.IdentityUtil;
 import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.datatype.converter.ConverterUtil;
 import com.douglei.tools.utils.naming.column.Columns;
+import com.ibs.i18n.ConditionalQuery.BuiltInConditions.MethodContext;
 import com.ibs.i18n.entity.CitySheet;
 import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.entity.ResponseBody;
 import com.ibs.i18n.i18n.ApiResultI18n;
 import com.ibs.i18n.i18n.MessageResult;
-import com.ibs.i18n.util.InParam.MethodContext;
+
 
 @TransactionComponent
 public class ProvinceService {
@@ -424,7 +425,6 @@ public class ProvinceService {
 			MethodContext methodContext = new MethodContext(res.getRequestBuiltinParams(),res.getRequestResourceParams(),res.getRequestParentResourceParams(),tableName);
 			messageResult.setData(methodContext.getDatas());
 		} catch (Exception e) {
-			e.printStackTrace();
 			messageResult.setError(e.toString());
 		}
 		return messageResult;

@@ -1,22 +1,11 @@
-package com.ibs.i18n.util;
+package com.ibs.i18n.ConditionalQuery.ObjectConditions;
 
 import java.util.List;
 import java.util.Map;
 import javax.servlet.http.HttpServletRequest;
 import com.ibs.i18n.entity.ResponseBody;
-import com.ibs.i18n.util.InParam.MethodContext;
-import com.ibs.i18n.util.InParam.OrderByMethod;
-import com.ibs.i18n.util.impl.BtnMethod;
-import com.ibs.i18n.util.impl.EqMethod;
-import com.ibs.i18n.util.impl.GeMethod;
-import com.ibs.i18n.util.impl.GtMethod;
-import com.ibs.i18n.util.impl.InMethod;
-import com.ibs.i18n.util.impl.LeMethod;
-import com.ibs.i18n.util.impl.LikeMethod;
-import com.ibs.i18n.util.impl.LtMethod;
-import com.ibs.i18n.util.impl.NeMethod;
 
-public class pdUtil{
+public class SplicingConditionsUtil{
 	
 	public static String notOperator = "";
 	
@@ -47,6 +36,7 @@ public class pdUtil{
 		}
 	}
 	
+	//解析URL
 	public static String czSql(Map<String, String> requestResourceParams, List<Object> paramlist) {
 		String sql = "";
 		if(requestResourceParams.size()!= 0) {
@@ -204,9 +194,5 @@ public class pdUtil{
 			         break;	
 		}
 		return sqls;
-	}
-
-	
-
-	
+	}	
 }
