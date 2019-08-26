@@ -49,5 +49,7 @@ public class OfficeController {
 		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
 		return officeService.Page(pageNum, pageSize);
 	}
+	
+
 
 }

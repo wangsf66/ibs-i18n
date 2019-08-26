@@ -1,6 +1,7 @@
 package com.ibs.i18n.controller;
 
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ibs.i18n.ConditionalQuery.ObjectConditions.SplicingConditionsUtil;
 import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.ProvinceService;
@@ -69,5 +71,11 @@ public class ProvinceController {
 		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
 		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
 		return provinceService.Page(pageNum, pageSize);
+	}
+	
+	@RequestMapping("/queryConditionA/{tableName}")
+	public MessageResult queryConditionA(HttpServletRequest request,@PathVariable(name = "tableName") String tableName){
+		List<Object> paramList = new ArrayList();
+		return provinceService.queryBtn(SplicingConditionsUtil.csSql(request,paramList,tableName),paramList,tableName);
 	}
 }

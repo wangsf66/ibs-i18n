@@ -47,7 +47,7 @@ public class SplicingConditionsUtil{
 	
    
 	//解析URL
-	public static String czSql(HttpServletRequest request,List<Object> paramList,String tableName) {
+	public static String csSql(HttpServletRequest request,List<Object> paramList,String tableName) {
 		String sql = "";
 		ResponseBody res = (ResponseBody)request.getAttribute("ResponseBody");
 		if(res.getRequestResourceParams().size()!= 0) {
@@ -73,7 +73,8 @@ public class SplicingConditionsUtil{
 					sql.append(montageSql(param,column,para,sql,paramList)); 	
 				}	
 			}else {
-				sql.append(" and "+ column +" = "+ param); 
+				sql.append(" and "+ column +" =  ? "); 
+				paramList.add(param);
 			}
         });
 		return sql.toString();
