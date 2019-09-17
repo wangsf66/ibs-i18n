@@ -5,6 +5,7 @@ jdb:
     default-jdb-orm-conf: jdb-orm.conf.xml
     data-source-close-method-name: close
     enable-redis-store-mapping: true
+    store-multi-data-source: true
     
 spring:
   redis:
@@ -13,12 +14,12 @@ spring:
     port: 6379
    
   datasource:
-    url: jdbc:sqlserver://localhost:1433;DatabaseName=douglei
-    username: sa
-    password: 123123
-#    url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=douglei
+#    url: jdbc:sqlserver://localhost:1433;DatabaseName=douglei
 #    username: sa
-#    password: 123_abc
+#    password: 123123
+    url: jdbc:sqlserver://192.168.1.111:1433;DatabaseName=douglei
+    username: sa
+    password: 123_abc
     type: com.alibaba.druid.pool.DruidDataSource
     driverClassName: com.microsoft.sqlserver.jdbc.SQLServerDriver
 i18n:

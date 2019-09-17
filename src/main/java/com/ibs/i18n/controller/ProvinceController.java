@@ -17,7 +17,6 @@ import com.ibs.i18n.ConditionalQuery.ObjectConditions.SplicingConditionsUtil;
 import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.ProvinceService;
-import com.ibs.response.ResponseContext;
 
 @RestController
 @RequestMapping("/province")
@@ -68,8 +67,8 @@ public class ProvinceController {
 	
 	@RequestMapping("/page")
 	public MessageResult page(HttpServletRequest request) {
-		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum =Integer.parseInt(request.getParameter("_page"));
+		int pageSize =Integer.parseInt(request.getParameter("_rows"));
 		return provinceService.Page(pageNum, pageSize);
 	}
 	
@@ -78,4 +77,6 @@ public class ProvinceController {
 		List<Object> paramList = new ArrayList();
 		return provinceService.queryBtn(SplicingConditionsUtil.csSql(request,paramList,tableName),paramList,tableName);
 	}
+	
+	
 }

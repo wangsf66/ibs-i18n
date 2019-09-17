@@ -11,7 +11,8 @@ import com.douglei.orm.context.SessionContext;
 import com.douglei.orm.context.SimpleSessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.core.sql.pagequery.PageResult;
-import com.douglei.orm.sessions.Session;
+
+import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.naming.column.Columns;
 import com.ibs.i18n.ConditionalQuery.ObjectConditions.SplicingConditionsUtil;
 import com.ibs.i18n.entity.ProvinceSheet;
@@ -26,9 +27,6 @@ public  class RecursiveMethod{
 	
 	public static final  String _recursive = "_recursive";
 	
-	public static final  String _Id = "ID";
-	
-	private String Id;
 	
 	private int deep;
 	
@@ -43,14 +41,14 @@ public  class RecursiveMethod{
 	
 	private Map<String,String> requestParentResourceParams;
 
-	public RecursiveMethod(int deep, String pcName,String tablename,Map<String,String> requestResourceParams,Map<String,String> requestParentResourceParams,String Id) {
+	public RecursiveMethod(int deep, String pcName,String tablename,Map<String,String> requestResourceParams,Map<String,String> requestParentResourceParams) {
 		super();
 		this.deep = deep;
 		this.pcName = pcName==null?"PARENT_ID":pcName.toUpperCase();
 		this.tablename  = tablename;
 		this.requestResourceParams = requestResourceParams;
 		this.requestParentResourceParams = requestParentResourceParams;
-		this.Id = Id;
+	
 	}
     //排序组件
 	private OrderByMethod orderByMethod;
@@ -74,7 +72,7 @@ public  class RecursiveMethod{
 			recursiveQuery(rootlist,paramlist);
 			return rootlist;
 		}else {
-			pageObject = SessionContext.getSqlSession().pageQuery(pageMethod.getRows(), pageMethod.getRows(),getSql(paramlist,null),paramlist);
+			pageObject = SessionContext.getSqlSession().pageQuery(pageMethod.getPage(), pageMethod.getRows(),getSql(paramlist,null),paramlist);
 			paramlist.clear();
 			recursiveQuery(pageObject.getResultDatas(),paramlist);
 			return pageObject;
@@ -86,13 +84,20 @@ public  class RecursiveMethod{
 		if(list.size()==0||this.deep==0) {
 			return;
 		}
-		this.deep--;
-		paramlist.clear();
 		List<Map<String, Object>> childlist = SessionContext.getSqlSession().query(getSql(paramlist,list),paramlist);
-		if(childlist.size()>0 && this.deep>0) {
-	    	recursiveQuery(childlist,paramlist);
-	    	addchild(childlist,list);
-	    }
+		paramlist.clear();
+		if(this.deep==-1) {
+			if(childlist.size()>0) {
+		    	recursiveQuery(childlist,paramlist);
+		    	addchild(childlist,list);
+		    }
+		}else {
+			this.deep--;	
+			if(childlist.size()>0 && this.deep>0) {
+		    	recursiveQuery(childlist,paramlist);
+		    	addchild(childlist,list);
+		    }
+		}
 	}
 	
 	//为父节点添加子节点
@@ -129,10 +134,15 @@ public  class RecursiveMethod{
 	//递归首次执行
 	private String getFirstSql(List<Object> paramlist) {
 		String sql = "";
-		if(Id==null) {
-			sql = "Select * from "+tablename+" where 1=1 "+SplicingConditionsUtil.czSql(requestParentResourceParams, paramlist)+" and ("+pcName+" is null or "+pcName+" ='') "+orderByMethod.getSql();
+		if(requestParentResourceParams.isEmpty()) {
+			sql = "Select * from "+tablename+" where ("+pcName+" is null or "+pcName+" ='') " +SplicingConditionsUtil.czSql(requestParentResourceParams, paramlist)+" and ("+pcName+" is null or "+pcName+" ='') "+orderByMethod.getSql();
 		}else {
-			sql = "Select * from "+tablename+" where 1=1 "+SplicingConditionsUtil.czSql(requestParentResourceParams, paramlist)+"  "+orderByMethod.getSql();
+			String pId = requestParentResourceParams.remove(pcName);
+			if("null".equalsIgnoreCase(pId)) {
+				sql = "Select * from "+tablename+" where ("+pcName+" is null or "+pcName+" ='') " +SplicingConditionsUtil.czSql(requestParentResourceParams, paramlist)+"  "+orderByMethod.getSql();
+			}else {
+				sql = "Select * from "+tablename+" where "+pcName+" = '"+pId+"' "+SplicingConditionsUtil.czSql(requestParentResourceParams, paramlist)+"  "+orderByMethod.getSql();
+			}
 		}	
 		executeFirst = true;
 		return sql;

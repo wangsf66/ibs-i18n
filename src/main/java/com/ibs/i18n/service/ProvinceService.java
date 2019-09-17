@@ -14,9 +14,7 @@ import com.douglei.orm.context.SimpleSessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.context.transaction.component.TransactionComponent;
 import com.douglei.orm.core.sql.pagequery.PageResult;
-import com.douglei.orm.core.validate.ValidateException;
-import com.douglei.orm.sessions.Session;
-import com.douglei.orm.sessions.session.table.TableSession;
+import com.douglei.orm.sessionfactory.sessions.Session;
 import com.douglei.tools.utils.IdentityUtil;
 import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.datatype.converter.ConverterUtil;
@@ -47,8 +45,6 @@ public class ProvinceService {
 		return informationService.getMessageResult(messageResult, null);
 		}
 
-	 
-	 
 	 public void insertPro(ProvinceSheet provinceSheet,MessageResult messageResult) {
 		  if(provinceSheet.getProvinceName()=="") {
 			 messageResult.addValidation("api.response.code.notNull", provinceSheet);
@@ -58,10 +54,7 @@ public class ProvinceService {
 				session.getTableSession().save(provinceSheet);
 				session.commit();
 				messageResult.addData("api.response.code.success", provinceSheet);
-			} catch (ValidateException e) {
-				session.rollback();
-				messageResult.addValidation("api.response.code.overLength", provinceSheet);
-			}catch (Exception e) {
+			} catch (Exception e) {
 				session.rollback();
 				messageResult.addError("api.response.code.error", provinceSheet);
 			}finally {
@@ -79,10 +72,7 @@ public class ProvinceService {
 					session.getTableSession().update(provinceSheet);
 					session.commit();
 					messageResult.addData("api.response.code.success", provinceSheet);
-				}catch (ValidateException e) {
-					session.rollback();
-					messageResult.addValidation("api.response.code.overLength", provinceSheet);
-				} catch (Exception e) {
+				}catch (Exception e) {
 					session.rollback();
 					messageResult.addError("api.response.code.error", provinceSheet);
 				}finally {

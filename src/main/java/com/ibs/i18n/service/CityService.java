@@ -1,7 +1,9 @@
 package com.ibs.i18n.service;
 
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -10,13 +12,12 @@ import com.douglei.orm.context.SimpleSessionContext;
 import com.douglei.orm.context.transaction.component.Transaction;
 import com.douglei.orm.context.transaction.component.TransactionComponent;
 import com.douglei.orm.core.sql.pagequery.PageResult;
-import com.douglei.orm.core.validate.ValidateException;
-import com.douglei.orm.sessions.Session;
+import com.douglei.orm.sessionfactory.sessions.Session;
 import com.douglei.tools.utils.StringUtil;
 import com.douglei.tools.utils.naming.column.Columns;
+import com.ibs.components.response.ResponseContext;
 import com.ibs.i18n.entity.CitySheet;
 import com.ibs.i18n.i18n.MessageResult;
-import com.ibs.response.ResponseContext;
 @TransactionComponent
 public class CityService {
 	
@@ -30,7 +31,7 @@ public class CityService {
 	 
 	 public void update(CitySheet citySheet) {
 		 updateCity(citySheet);
-	}
+	 }
 	
 		public void insertCity(CitySheet citySheet){
 			 if("".equals(citySheet.getCityName())||citySheet.getCityName()==null) {
@@ -47,7 +48,7 @@ public class CityService {
 					ResponseContext.addData(citySheet);
 				}catch (Exception e) {
 					session.rollback();
-					ResponseContext.addError(citySheet, "api.response.code.error");
+					ResponseContext.addError(citySheet,e);
 				}finally {
 					session.close();
 			    }  	
@@ -71,7 +72,7 @@ public class CityService {
 					ResponseContext.addData(citySheet);
 				}catch (Exception e) {
 					session.rollback();
-					ResponseContext.addError(citySheet, "api.response.code.error");
+					ResponseContext.addError(citySheet,e);
 				}finally {
 					session.close();
 			    }  	
@@ -83,15 +84,17 @@ public class CityService {
 	
 	
 	public MessageResult delete(String ids) {
+		Map<String,Object> idsMap = new HashMap();
+		idsMap.put("ids", ids);
 		MessageResult messageResult = new MessageResult();
 		Session session =  SimpleSessionContext.getSession();
 		 try {
-			session.getSqlSession().executeUpdate("delete from CITY_SHEET where ID in ("+ids+")");
+			session.getSqlSession().executeUpdate("delete from CITY_SHEET where ID in ("+getParam(ids)+")");
 			session.commit();
-			messageResult.addData("api.response.code.success", ids);
+			messageResult.addData("api.response.code.success", idsMap);
 		} catch (Exception e) {
 			session.rollback();
-			messageResult.addError("api.response.code.error", ids);
+			messageResult.addError("api.response.code.error", idsMap);
 		}finally {
 			session.close();
 	   } 
@@ -167,4 +170,17 @@ public class CityService {
 		mr.setData(obj);
 		return mr;
 	}
+	
+	public String getParam(String ids) {
+		String id[] = ids.split(",");
+		String sql = "";
+		for(int i=0;i<id.length;i++) {
+			if(i==id.length-1) {
+				sql+= "'"+id[i]+"'";
+			}else {
+				sql+= "'"+id[i]+"' ,";
+			}
+		}	
+		return  sql;
+	}	
 }

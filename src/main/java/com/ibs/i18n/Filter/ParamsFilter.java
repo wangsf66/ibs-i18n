@@ -62,7 +62,7 @@ public class ParamsFilter implements Filter{
 	    			  "_recursive", "_deep", "_pcName", 
 	    			  "_simpleModel", "_psRefPropName",
 	    			  "_subResourceName", "_subListRefPropName", "_subSort"
-	    			 	   };
+	    	};
 	    	Map<String, String> builtinParams = null;
 			if(urlParams.size() > 0){
 				builtinParams = new HashMap<String, String>(urlParams.size());

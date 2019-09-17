@@ -39,7 +39,7 @@ public class RoutineQueryMethod {
 		if(pageMethod==null) {
 			return SessionContext.getSqlSession().query(getSql(paramlist),paramlist);
 		}else {
-			return  SessionContext.getSqlSession().pageQuery(pageMethod.getRows(), pageMethod.getRows(),getSql(paramlist),paramlist);
+			return  SessionContext.getSqlSession().pageQuery(pageMethod.getPage(), pageMethod.getRows(),getSql(paramlist),paramlist);
 		}
 	}
 

@@ -3,6 +3,8 @@ package com.ibs.i18n.ConditionalQuery.BuiltInConditions;
 
 import java.util.Map;
 
+import com.douglei.tools.utils.StringUtil;
+
 public class MethodContext {
     //排序
 	private OrderByMethod orderByMethod;
@@ -50,20 +52,18 @@ public class MethodContext {
 		String recursive = requestBuiltinParams.get(RecursiveMethod._recursive);
 		String pcName = requestBuiltinParams.get(RecursiveMethod._pcName);
 		String  deep = requestBuiltinParams.get(RecursiveMethod._deepKey);
-		String Id = requestParentResourceParams.get(RecursiveMethod._Id);
-		if(recursive!=null) {
-			if(recursive.equals("true")) {
-				recursiveMethod = new RecursiveMethod(Integer.parseInt(deep),pcName,tablename,requestResourceParams,requestParentResourceParams,Id);
-				if(orderByMethod!=null) {
-					recursiveMethod.setOrderByMethod(orderByMethod);
-				}
-				if(pageMethod!=null) {
-					recursiveMethod.setPageMethod(pageMethod);
-				}
+		if("true".equals(recursive)) {
+			if(StringUtil.isEmpty(pcName)) {
+				pcName = "PID";
 			}
-		}else {
-			recursiveMethod  = null;
-		}
+			recursiveMethod = new RecursiveMethod(Integer.parseInt(deep),pcName,tablename,requestResourceParams,requestParentResourceParams);
+			if(orderByMethod!=null) {
+				recursiveMethod.setOrderByMethod(orderByMethod);
+			}
+			if(pageMethod!=null) {
+				recursiveMethod.setPageMethod(pageMethod);
+			}
+		}	
 	}
 	
 	public void setOrderByMethod(Map<String,String> requestBuiltinParams) {

@@ -5,28 +5,28 @@ import com.douglei.tools.utils.naming.column.Column;
 
 public class OfficeSheet {
 	@Column("ID")
-	private String id;
+	private String ID;
 	@Column("OFFICENAME")
-	private String officeName;
+	private String OFFICENAME;
 	@Column("PID")
-	private String pId;
+	private String PID;
+	public String getID() {
+		return ID;
+	}
+	public void setID(String ID) {
+		ID = ID;
+	}
+	public String getOFFICENAME() {
+		return OFFICENAME;
+	}
+	public void setOFFICENAME(String OFFICENAME) {
+		OFFICENAME = OFFICENAME;
+	}
+	public String getPID() {
+		return PID;
+	}
+	public void setPID(String PID) {
+		PID = PID;
+	}
 	
-	public String getId() {
-		return id;
-	}
-	public void setId(String id) {
-		this.id = id;
-	}
-	public String getOfficeName() {
-		return officeName;
-	}
-	public void setOfficeName(String officeName) {
-		this.officeName = officeName;
-	}
-	public String getpId() {
-		return pId;
-	}
-	public void setpId(String pId) {
-		this.pId = pId;
-	}
 }

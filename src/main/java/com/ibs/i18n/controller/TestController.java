@@ -146,8 +146,8 @@ public class TestController{
 	
 	@RequestMapping("/page")
 	public MessageResult page(HttpServletRequest request) {
-		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum =Integer.parseInt(request.getParameter("_page"));
+		int pageSize =Integer.parseInt(request.getParameter("_rows"));
 		return informationService.Page(pageNum, pageSize);
 	}
 	
@@ -188,8 +188,8 @@ public class TestController{
 	@RequestMapping("/selectCityByProvinceIdPage")
 	public MessageResult city4(HttpServletRequest request) {
 		String id =request.getParameter("pid");
-		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum =Integer.parseInt(request.getParameter("_page"));
+		int pageSize =Integer.parseInt(request.getParameter("_rows"));
 		return provinceService.query(id,pageNum,pageSize);
 	}
 }

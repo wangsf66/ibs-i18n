@@ -1,7 +1,6 @@
 package com.ibs.i18n.controller;
 
 
-import java.util.ArrayList;
 import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
@@ -11,21 +10,16 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.ibs.components.response.Response;
+import com.ibs.components.response.ResponseContext;
 import com.ibs.i18n.entity.CitySheet;
-import com.ibs.i18n.entity.InformationSheet;
-import com.ibs.i18n.entity.ProvinceSheet;
 import com.ibs.i18n.i18n.MessageResult;
 import com.ibs.i18n.service.CityService;
-import com.ibs.i18n.service.InformationService;
-import com.ibs.i18n.service.ProvinceService;
-import com.ibs.response.Response;
-import com.ibs.response.ResponseContext;
 
 @RestController
 @RequestMapping("/city")
 public class CityController {
-	
-	
+
 	@Autowired
 	private CityService cityService;
 	
@@ -66,8 +60,8 @@ public class CityController {
 	
 	@RequestMapping("/page")
 	public MessageResult page(HttpServletRequest request) {
-		int pageNum =Integer.parseInt(request.getParameter("pageNum"));
-		int pageSize =Integer.parseInt(request.getParameter("pageSize"));
+		int pageNum =Integer.parseInt(request.getParameter("_page"));
+		int pageSize =Integer.parseInt(request.getParameter("_rows"));
 		return cityService.Page(pageNum, pageSize);
 	}
 	
